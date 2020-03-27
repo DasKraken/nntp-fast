@@ -93,17 +93,12 @@ export class NntpConnection extends EventEmitter {
 
 
     onData(data: Buffer) {
-        //console.log(util.inspect(data.toString()));
         let r: number;
-        //console.log(util.inspect(data.toString("ascii", 0, 50)))
         if (this.delimiter_search_type == Delimiter.CRLF) {
-            //console.log(data.length + " to CRLF")
             r = this.streamsearch_CRLF.push(data);
-            //console.log(r+"/"+data.length)
             if (this.streamsearch_CRLF.matches == 1) {
                 if (this.handleResponse(Buffer.concat(this.buffer).toString())) {
                     // returns true if multi line data block is expected
-                    //console.log("switch to MLDB")
                     this.delimiter_search_type = Delimiter.MLDB;
                 } else {
                     this.responseQueue.splice(0, 1);
@@ -112,14 +107,11 @@ export class NntpConnection extends EventEmitter {
                 this.streamsearch_CRLF.reset();
             }
         } else {
-            //console.log(data.length + " to MLDB")
             r = this.streamsearch_MLDB.push(data);
-            //console.log(r+"/"+data.length)
             if (this.streamsearch_MLDB.matches == 1) {
                 let stream = this.responseQueue[0].MldbStream;
                 stream?.end();
                 this.responseQueue.splice(0, 1);
-                //console.log("switch to CRLF")
                 this.delimiter_search_type = Delimiter.CRLF;
                 this.streamsearch_MLDB.reset();
             }
@@ -127,7 +119,6 @@ export class NntpConnection extends EventEmitter {
 
         if (r < data.length) {
             // Data after delimiter
-            //console.log("redirext more")
             this.onData(data.slice(r));
         }
     }
@@ -177,17 +168,14 @@ export class NntpConnection extends EventEmitter {
     }
 
     handleResponse(response: string) {
-        //console.log("response: " + util.inspect(response));
         const { code, message } = this.getCode(response);
         const responseHandler = this.responseQueue[0];
         if (this.responseQueue.length == 0) {
-            console.log(`Unexpected response: ${code} ${message}`)
+            this.emit("error", new Error(`Unexpected response: ${code} ${message}`));
             return;
         }
 
         if (RES_CODE_ML.includes(code) || (responseHandler.decideMldb && responseHandler.decideMldb(code))) {
-            //handler.MldbStream = new PassThrough();
-            // handler.MldbStream.on('data', (chunk) => { console.log("MLDB: " + util.inspect(chunk.toString())); });
             if (responseHandler.MldbStream) {
                 responseHandler.handleResponse(code, message);
             } else {
