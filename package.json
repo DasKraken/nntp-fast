@@ -27,5 +27,5 @@
     "eslint": "eslint \"src/**/*.ts\""
   },
   "author": "",
-  "license": "ISC"
+  "license": "Unlicense"
 }

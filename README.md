@@ -57,14 +57,46 @@ Benchmark
 =========
 See [benchmark](./benchmark/) how it was made.
 
-Windows Laptop:
-| package                                              | dot-unstuffing                     | speed (Windows laptop)                      | speed (Linux server)                        |
-|------------------------------------------------------|------------------------------------|---------------------------------------------|---------------------------------------------|
-| <span style="color:green">nntp-fast</span>           | <span style="color:red">✗</span>   | <span style="color:green">183.87 MiB</span> | <span style="color:green">324.20 MiB</span> |
-| <span style="color:green">nntp-fast</span>           | <span style="color:green">✓</span> | <span style="color:green">176.44 MiB</span> | <span style="color:green">140.80 MiB</span> |
-| [node-nntp](https://www.npmjs.com/package/node-nntp) | <span style="color:red">✗</span>   | 3.85 MiB                                    | 4.46  MiB                                   |
-| [newsie](https://www.npmjs.com/package/newsie)       | <span style="color:green">✓</span> | 25.53 MiB                                   | 28.51 MiB                                   |
-| [nntp](https://www.npmjs.com/package/nntp)           | <span style="color:red">✗</span>   | 179.89 MiB                                  | 19.31 MiB                                   |
-| [entepe](https://www.npmjs.com/package/entepe)       | <span style="color:red">✗</span>   | 1.04 MiB                                    | 1.0 MiB                                     |
+**Results:**
+| package                                              | dot-unstuffing | speed (Windows laptop) | speed (Linux server) |
+|------------------------------------------------------|----------------|------------------------|----------------------|
+| nntp-fast (this)                                     | ✗              | 183.87 MiB             | 324.20 MiB           |
+| nntp-fast (this)                                     | ✓              | 176.44 MiB             | 140.80 MiB           |
+| [nntp](https://www.npmjs.com/package/nntp)           | ✗              | 179.89 MiB             | 19.31 MiB            |
+| [newsie](https://www.npmjs.com/package/newsie)       | ✓              | 25.53 MiB              | 28.51 MiB            |
+| [node-nntp](https://www.npmjs.com/package/node-nntp) | ✗              | 3.85 MiB               | 4.46  MiB            |
+| [entepe](https://www.npmjs.com/package/entepe)       | ✗              | 1.04 MiB               | 1.0 MiB              |
 
 
+Usage
+=====
+
+
+
+
+License
+=======
+This is free and unencumbered software released into the public domain.
+
+Anyone is free to copy, modify, publish, use, compile, sell, or
+distribute this software, either in source code form or as a compiled
+binary, for any purpose, commercial or non-commercial, and by any
+means.
+
+In jurisdictions that recognize copyright laws, the author or authors
+of this software dedicate any and all copyright interest in the
+software to the public domain. We make this dedication for the benefit
+of the public at large and to the detriment of our heirs and
+successors. We intend this dedication to be an overt act of
+relinquishment in perpetuity of all present and future rights to this
+software under copyright law.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+OTHER DEALINGS IN THE SOFTWARE.
+
+For more information, please refer to <http://unlicense.org/>
