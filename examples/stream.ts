@@ -1,7 +1,7 @@
 import { NntpConnection } from "..";
 
 async function main() {
-    const conn = new NntpConnection();
+    const conn = new NntpConnection({ dotUnstuffing: false });
     await conn.connect("news.newsgroup.ninja", 23);
 
     await conn.runCommand("AUTHINFO USER <username>");

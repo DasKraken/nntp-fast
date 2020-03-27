@@ -43,10 +43,17 @@ export class NntpConnection extends EventEmitter {
 
     streamsearch_CRLF: StreamSearch;
     streamsearch_MLDB: DotUnstuffingStreamSearch;
-    constructor() {
+    constructor(options?: { dotUnstuffing?: boolean }) {
         super();
+        if (!options) options = {};
+        if (options.dotUnstuffing === undefined) options.dotUnstuffing = true;
+
         this.streamsearch_CRLF = new StreamSearch(Buffer.from("\r\n"));
-        this.streamsearch_MLDB = new DotUnstuffingStreamSearch(Buffer.from("\r\n.\r\n"));
+        if (options.dotUnstuffing) {
+            this.streamsearch_MLDB = new DotUnstuffingStreamSearch(Buffer.from("\r\n.\r\n"));
+        } else {
+            this.streamsearch_MLDB = new StreamSearch(Buffer.from("\r\n.\r\n"));
+        }
         this.streamsearch_CRLF.maxMatches = 1;
         this.streamsearch_MLDB.maxMatches = 1;
         this.streamsearch_CRLF.on("info", this.onInfoCRLF.bind(this));

@@ -10,19 +10,19 @@ import * as ResponseNN from "node-nntp/lib/response";
 ResponseNN.createFromString = function (string) {
     var matches = /^(\d{3}) ([\S\s]+)$/g.exec(string.toString().trim());
     if (!matches) {
-      throw new Error('Invalid response given: ' + string);
+        throw new Error('Invalid response given: ' + string);
     }
-  
+
     if (parseInt(matches[1]) < 100 || parseInt(matches[1]) >= 600) {
-      throw new Error('Invalid status code given: ' + matches[1]);
+        throw new Error('Invalid status code given: ' + matches[1]);
     }
-  
+
     return new ResponseNN(parseInt(matches[1], 10), matches[2]);
-  };
+};
 
 async function main() {
     console.log("(ours)")
-    const conn = new NntpConnection();
+    const conn = new NntpConnection({ dotUnstuffing: false });
     await conn.connect("127.0.0.1", 1337);
 
     let count = 0;
@@ -44,12 +44,44 @@ async function main() {
         });
         await prev_promise;
         prev_promise = promise;
-        
+
     }
     await prev_promise;
 
     let end = Date.now();
-    console.log((count / 1024 / 1024) / ((end - start) / 1000) + " MiB/s (ours)")
+    console.log((count / 1024 / 1024) / ((end - start) / 1000) + " MiB/s (ours without dot unstuffing)")
+    await conn.runCommand("QUIT")
+}
+async function main_unstuffing() {
+    console.log("(ours)")
+    const conn = new NntpConnection({ dotUnstuffing: true });
+    await conn.connect("127.0.0.1", 1337);
+
+    let count = 0;
+    let start = Date.now();
+
+    let prev_promise = Promise.resolve();
+
+    for (let i = 0; i < 1000; i++) {
+        let promise = new Promise<void>(async (resolve, reject) => {
+            const body = conn.bodyStream(23131)
+            //console.log(await body.promise);
+            body.stream.on("end", () => {
+                resolve();
+            });
+            body.stream.on("error", (err) => {
+                console.log(err)
+            });
+            body.stream.on("data", (data) => count += data.length)
+        });
+        await prev_promise;
+        prev_promise = promise;
+
+    }
+    await prev_promise;
+
+    let end = Date.now();
+    console.log((count / 1024 / 1024) / ((end - start) / 1000) + " MiB/s (ours with dot unstuffing)")
     await conn.runCommand("QUIT")
 }
 
@@ -62,7 +94,7 @@ function main_nntp() {
             let start = Date.now();
             let prev_promise = Promise.resolve();
             for (let i = 0; i < 1000; i++) {
-                let promise =  new Promise<void>(async (resolve2, reject) => {
+                let promise = new Promise<void>(async (resolve2, reject) => {
                     c.body("23131", function (err, n, id, body) {
                         if (err) throw err;
                         count += body.length;
@@ -76,7 +108,7 @@ function main_nntp() {
             let end = Date.now();
             console.log((count / 1024 / 1024) / ((end - start) / 1000) + " MiB/s (nntp)");
             c.end();
-            
+
         });
         c.on('error', function (err) {
             console.log('Error: ' + err);
@@ -161,4 +193,4 @@ async function main_entepe() {
 }
 
 
-main().then(main_nntp).then(main_node_nntp).then(main_newsie).then(main_entepe).then(console.log, console.log);
+main().then(main_unstuffing).then(main_nntp).then(main_node_nntp).then(main_newsie).then(main_entepe).then(console.log, console.log);
