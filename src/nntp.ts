@@ -31,6 +31,7 @@ interface ResponseHandler {
 export class NntpConnection {
 
     connected: boolean;
+    connected_response: { code: number, message: string };
     socket: net.Socket;
 
     responseQueue: ResponseHandler[] = [];
@@ -50,25 +51,24 @@ export class NntpConnection {
         this.streamsearch_MLDB.on("info", this.onInfoMLDB.bind(this));
     }
 
-    connect(host: string, port: number): Promise<void> {
+    connect(host: string, port: number): Promise<{ code: number, message: string }> {
         if (this.connected) {
-            return Promise.resolve();
+            return Promise.resolve(this.connected_response);
         }
         return new Promise((resolve, reject) => {
 
             // Initial Handler
             const handler: ResponseHandler = {
                 handleResponse: (code: number, message: string) => {
-                    console.log("initresponse: " + util.inspect({ code, message }));
-                    resolve();
+                    this.connected = true;
+                    this.connected_response = { code, message };
+                    resolve({ code, message });
                 }
             }
             this.responseQueue = [handler];
 
             this.socket = net.createConnection({ host: host, port: port }, () => {
                 // 'connect' listener.
-                console.log('connected to server!');
-                this.connected = true;
 
             });
             this.socket.on('data', (data) => { this.onData(data) });
@@ -141,7 +141,7 @@ export class NntpConnection {
         }
 
         // Note: never call reset() inside this callback
-        
+
     }
     onInfoMLDB(isMatch: boolean, data: Buffer, start: number, end: number) {
         let stream = this.responseQueue[0].MldbStream;
@@ -154,7 +154,7 @@ export class NntpConnection {
         }
 
         // Note: never call reset() inside this callback
-        
+
     }
 
     getCode(response: string) {
