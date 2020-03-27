@@ -1,6 +1,6 @@
 nntp-fast
 =========
-A lightweight made with attention to speed and ease of use. Works with promises and streams.
+A lightweight nntp client for node made with attention to speed and ease of use. Works with promises and streams.
 
 Example
 =======
@@ -43,7 +43,7 @@ async function main() {
     await conn.runCommand("AUTHINFO USER <username>");
     await conn.runCommand("AUTHINFO PASS <password>");
 
-    // get body stream
+    // get body as stream
     let r = await conn.bodyStream("<uQ8vBCAo$st$uyOmdX$ZKLpHez9@iu6bkwQcawtRbODe>");
 
     r.stream.on("data", (data) => console.log(data.length));
@@ -55,10 +55,14 @@ main()
 
 Benchmark
 =========
-See [benchmark](./benchmark/) how it was made.
+**Method**: See [benchmark](./benchmark/).
+
+**Machine 1**: Windows 10, Intel(R) Core(TM) i5-7300U CPU @ 2.60GHz
+
+**Machine 2**: Ubuntu 18.04.4, Intel(R) Core(TM) i7-2600K CPU @ 3.40GHz
 
 **Results:**
-| package                                              | dot-unstuffing | speed (Windows laptop) | speed (Linux server) |
+| package                                              | dot-unstuffing | speed (Machine 1) | speed (Machine 2) |
 |------------------------------------------------------|----------------|------------------------|----------------------|
 | nntp-fast (this)                                     | ✗              | 183.87 MiB             | 324.20 MiB           |
 | nntp-fast (this)                                     | ✓              | 176.44 MiB             | 140.80 MiB           |
