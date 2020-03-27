@@ -3,6 +3,7 @@ import { PassThrough, Writable, Readable } from "stream";
 import * as util from "util";
 import * as StreamSearch from "streamsearch";
 import DotUnstuffingStreamSearch from "./DotUnstuffingStreamSearch";
+import { EventEmitter } from "events";
 
 
 enum Delimiter {
@@ -28,7 +29,7 @@ interface ResponseHandler {
     MldbStream?: PassThrough;
 }
 
-export class NntpConnection {
+export class NntpConnection extends EventEmitter {
 
     connected: boolean;
     connected_response: { code: number, message: string };
@@ -43,6 +44,7 @@ export class NntpConnection {
     streamsearch_CRLF: StreamSearch;
     streamsearch_MLDB: DotUnstuffingStreamSearch;
     constructor() {
+        super();
         this.streamsearch_CRLF = new StreamSearch(Buffer.from("\r\n"));
         this.streamsearch_MLDB = new DotUnstuffingStreamSearch(Buffer.from("\r\n.\r\n"));
         this.streamsearch_CRLF.maxMatches = 1;
@@ -74,18 +76,17 @@ export class NntpConnection {
             this.socket.on('data', (data) => { this.onData(data) });
             this.socket.on('end', () => {
                 this.connected = false;
-                console.log('disconnected from server');
+                this.emit("end");
             });
             this.socket.on('error', (err) => {
                 this.connected = false;
-                console.log('error from server');
-                console.log(err);
                 reject();
+                this.emit("error", err);
             });
             this.socket.on('timeout', () => {
                 this.connected = false;
-                console.log('timeout from server');
                 this.socket.end();
+                this.emit("timeout");
             });
         })
     }
