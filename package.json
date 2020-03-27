@@ -17,6 +17,8 @@
     "rimraf": "^3.0.2",
     "ts-jest": "^25.2.1",
     "ts-node": "^8.7.0",
+    "typedoc": "^0.17.3",
+    "typedoc-plugin-markdown": "^2.2.17",
     "typescript": "^3.8.3"
   },
   "scripts": {
@@ -24,7 +26,8 @@
     "clean": "rimraf lib types",
     "build": "tsc -p .",
     "watch": "watch \"npm run build\" ./src",
-    "eslint": "eslint \"src/**/*.ts\""
+    "eslint": "eslint \"src/**/*.ts\"",
+    "typedoc": "npx typedoc --plugin typedoc-plugin-markdown --excludeNotExported --excludePrivate  --out docs src"
   },
   "author": "",
   "license": "Unlicense"

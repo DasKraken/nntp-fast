@@ -2,6 +2,10 @@ import { Transform } from "stream";
 import * as StreamSearch from "streamsearch";
 
 const CRLF = Buffer.from("\r\n");
+
+/**
+ * Transform stream that performs dot-unstuffing
+ */
 export default class DotUnstuffingStream extends Transform {
     _streamsearch: StreamSearch;
     constructor() {
@@ -21,6 +25,10 @@ export default class DotUnstuffingStream extends Transform {
         })
 
     }
+    /**
+     * 
+     * @private
+     */
     _transform(chunk: Buffer, encoding: string, callback: Function): void {
         this._streamsearch.push(chunk);
         callback();

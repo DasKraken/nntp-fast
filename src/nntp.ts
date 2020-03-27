@@ -36,18 +36,30 @@ type Headers = Record<string, string>;
 
 
 export class NntpConnection extends EventEmitter {
-
+    /** @private */
     _connected: boolean;
+    /** @private */
     _connectedResponse: BasicResponse;
-    socket: net.Socket;
+    /** @private */
+    _socket: net.Socket;
 
-    responseQueue: ResponseHandler[] = [];
+    /** @private */
+    _responseQueue: ResponseHandler[] = [];
 
+    /** @private */
     _buffer: Buffer[] = [];
+    /** @private */
     _delimiterSearchType: Delimiter = Delimiter.CRLF;
 
+    /** @private */
     _streamsearchCRLF: StreamSearch;
+    /** @private */
     _streamsearchMLDB: DotUnstuffingStreamSearch;
+
+    /**
+     * 
+     * @param options options
+     */
     constructor(options?: { dotUnstuffing?: boolean }) {
         super();
         if (!options) options = {};
@@ -64,7 +76,11 @@ export class NntpConnection extends EventEmitter {
         this._streamsearchCRLF.on("info", this._onInfoCRLF.bind(this));
         this._streamsearchMLDB.on("info", this._onInfoMLDB.bind(this));
     }
-
+    /**
+     * Connect to nntp server
+     * @param host
+     * @param port
+     */
     connect(host: string, port: number): Promise<BasicResponse> {
         if (this._connected) {
             return Promise.resolve(this._connectedResponse);
@@ -79,31 +95,34 @@ export class NntpConnection extends EventEmitter {
                     resolve({ code, message });
                 }
             }
-            this.responseQueue = [handler];
+            this._responseQueue = [handler];
 
-            this.socket = net.createConnection({ host: host, port: port }, () => {
+            this._socket = net.createConnection({ host: host, port: port }, () => {
                 // 'connect' listener.
 
             });
-            this.socket.on('data', (data) => { this._onData(data) });
-            this.socket.on('end', () => {
+            this._socket.on('data', (data) => { this._onData(data) });
+            this._socket.on('end', () => {
                 this._connected = false;
                 this.emit("end");
             });
-            this.socket.on('error', (err) => {
+            this._socket.on('error', (err) => {
                 this._connected = false;
                 reject();
                 this.emit("error", err);
             });
-            this.socket.on('timeout', () => {
+            this._socket.on('timeout', () => {
                 this._connected = false;
-                this.socket.end();
+                this._socket.end();
                 this.emit("timeout");
             });
         })
     }
 
-
+    /**
+     * @private
+     * @param data 
+     */
     _onData(data: Buffer): void {
         let r: number;
         if (this._delimiterSearchType == Delimiter.CRLF) {
@@ -113,7 +132,7 @@ export class NntpConnection extends EventEmitter {
                     // returns true if multi line data block is expected
                     this._delimiterSearchType = Delimiter.MLDB;
                 } else {
-                    this.responseQueue.splice(0, 1);
+                    this._responseQueue.splice(0, 1);
                 }
                 this._buffer = [];
                 this._streamsearchCRLF.reset();
@@ -121,9 +140,9 @@ export class NntpConnection extends EventEmitter {
         } else {
             r = this._streamsearchMLDB.push(data);
             if (this._streamsearchMLDB.matches == 1) {
-                const stream = this.responseQueue[0].MldbStream;
+                const stream = this._responseQueue[0].MldbStream;
                 stream?.end();
-                this.responseQueue.splice(0, 1);
+                this._responseQueue.splice(0, 1);
                 this._delimiterSearchType = Delimiter.CRLF;
                 this._streamsearchMLDB.reset();
             }
@@ -134,7 +153,13 @@ export class NntpConnection extends EventEmitter {
             this._onData(data.slice(r));
         }
     }
-
+    /**
+     * @private
+     * @param isMatch 
+     * @param data 
+     * @param start 
+     * @param end 
+     */
     _onInfoCRLF(isMatch: boolean, data: Buffer, start: number, end: number): void {
         if (data) {
             if (start == 0 && end == data.length) {
@@ -147,8 +172,15 @@ export class NntpConnection extends EventEmitter {
         // Note: never call reset() inside this callback
 
     }
+    /**
+     * @private
+     * @param isMatch 
+     * @param data 
+     * @param start 
+     * @param end 
+     */
     _onInfoMLDB(isMatch: boolean, data: Buffer, start: number, end: number): void {
-        const stream = this.responseQueue[0].MldbStream;
+        const stream = this._responseQueue[0].MldbStream;
         if (data) {
             if (start == 0 && end == data.length) {
                 stream?.write(data);
@@ -161,7 +193,11 @@ export class NntpConnection extends EventEmitter {
 
     }
 
-    getCode(response: string): BasicResponse {
+    /**
+     * @private
+     * @param response 
+     */
+    _getCode(response: string): BasicResponse {
         const res = /^([0-9]{3}) ([^\r\n]*)$/.exec(response);
         if (res) {
             return { code: parseInt(res[1]), message: res[2] };
@@ -169,8 +205,11 @@ export class NntpConnection extends EventEmitter {
             throw new Error("couldnt parse response: " + response);
         }
     }
-
-    parseHeader(headString: string): Headers {
+    /**
+     * @private
+     * @param headString 
+     */
+    _parseHeader(headString: string): Headers {
         const headers: Headers = {};
         for (const entry of headString.split("\r\n")) {
             const firstColon = entry.indexOf(': ');
@@ -178,11 +217,14 @@ export class NntpConnection extends EventEmitter {
         }
         return headers;
     }
-
+    /**
+     * @private
+     * @param response 
+     */
     _handleResponse(response: string): boolean {
-        const { code, message } = this.getCode(response);
-        const responseHandler = this.responseQueue[0];
-        if (this.responseQueue.length == 0) {
+        const { code, message } = this._getCode(response);
+        const responseHandler = this._responseQueue[0];
+        if (this._responseQueue.length == 0) {
             this.emit("error", new Error(`Unexpected response: ${code} ${message}`));
             return false;
         }
@@ -207,7 +249,12 @@ export class NntpConnection extends EventEmitter {
         }
 
     }
-
+    /**
+     * Sends command to server.
+     * @param command command to execute
+     * @param decideMldb optional function that decides from response code whether a 
+     * multi line data block is to be expected
+     */
     runCommand(command: string, decideMldb?: (code: number) => boolean): Promise<DataResponse> {
         return new Promise((resolve) => {
             const handler: ResponseHandler = {
@@ -217,10 +264,16 @@ export class NntpConnection extends EventEmitter {
                 decideMldb: decideMldb
             }
 
-            this.responseQueue.push(handler);
-            this.socket.write(command + "\r\n");
+            this._responseQueue.push(handler);
+            this._socket.write(command + "\r\n");
         });
     }
+    /**
+     * Sends command to server. Creates a stream for the multi line data block.
+     * @param command command to execute
+     * @param decideMldb optional function that decides from response code whether a 
+     * multi line data block is to be expected
+     */
     runCommandStream(command: string, decideMldb?: (code: number) => boolean): { stream: Readable; response: Promise<BasicResponse> } {
         const stream = new PassThrough();
         const response = new Promise<BasicResponse>((resolve): void => {
@@ -231,14 +284,20 @@ export class NntpConnection extends EventEmitter {
                 MldbStream: stream,
                 decideMldb: decideMldb
             }
-            this.responseQueue.push(handler);
-            this.socket.write(command + "\r\n");
+            this._responseQueue.push(handler);
+            this._socket.write(command + "\r\n");
         });
 
 
         return { stream, response };
     }
-
+    /**
+     * The CAPABILITIES command allows a client to determine the
+     * capabilities of the server at any given time.
+     * 
+     * See [RFC 3977 Section 3.3](https://tools.ietf.org/html/rfc3977#section-3.3)
+     * @param keyword 
+     */
     async capabilities(keyword?: string): Promise<{ code: number; message: string; body?: Buffer }> {
         const res = await this.runCommand("CAPABILITIES" + (keyword ? " " + keyword : ""));
         if (res.code == 101) {
@@ -248,6 +307,10 @@ export class NntpConnection extends EventEmitter {
         }
 
     }
+    /**
+     * The MODE READER command instructs a mode-switching server to switch
+     * modes, as described in [RFC 3977 Section 3.4.2](https://tools.ietf.org/html/rfc3977#section-3.4.2).
+     */
     async modeReader(): Promise<BasicResponse> {
         const res = await this.runCommand("MODE READER");
         if ([200, 201/*, 502*/].includes(res.code)) {
@@ -257,6 +320,9 @@ export class NntpConnection extends EventEmitter {
         }
 
     }
+    /**
+     * The client uses the QUIT command to terminate the session.
+     */
     async quit(): Promise<BasicResponse> {
         const res = await this.runCommand("QUIT");
         if (205 == res.code) {
@@ -266,6 +332,11 @@ export class NntpConnection extends EventEmitter {
         }
 
     }
+    /**
+     * The GROUP command selects a newsgroup as the currently selected
+     * newsgroup and returns summary information about it.
+     * @param group 
+     */
     async group(group: string): Promise<{ code: number; number: number; low: number; high: number; group: string }> {
         const res = await this.runCommand("GROUP " + group);
         if (res.code == 211) {
@@ -285,6 +356,16 @@ export class NntpConnection extends EventEmitter {
         }
 
     }
+
+    /**
+     * The LISTGROUP command selects a newsgroup in the same manner as the
+     * GROUP command but also provides a list of article
+     * numbers in the newsgroup.  If no group is specified, the currently
+     * selected newsgroup is used.
+     * 
+     * @param group 
+     * @param range 
+     */
     async listgroup(group?: string, range?: string): Promise<{ code: number; message: string; articles: number[] }> {
         const res = await this.runCommand("LISTGROUP" + (group ? " " + group + (range ? " " + range : "") : ""), code => code == 211); // Multiline data if code 221 returned
         if (res.code == 211) {
@@ -301,6 +382,10 @@ export class NntpConnection extends EventEmitter {
         }
 
     }
+    /**
+     * The current article number will be set to the previous article in
+     * that newsgroup
+     */
     async last(): Promise<StatResponse> {
         const res = await this.runCommand("LAST");
         if ([223/*, 412, 420, 422*/].includes(res.code)) {
@@ -318,6 +403,11 @@ export class NntpConnection extends EventEmitter {
         }
 
     }
+
+    /**
+     * The current article number will be set to the next article in
+     * that newsgroup
+     */
     async next(): Promise<StatResponse> {
         const res = await this.runCommand("NEXT");
         if ([223/*, 412, 420, 422*/].includes(res.code)) {
@@ -335,6 +425,13 @@ export class NntpConnection extends EventEmitter {
         }
 
     }
+    /**
+     * The ARTICLE command selects an article according to the arguments and
+     * presents the entire article (that is, the headers, and the body) to 
+     * the client.
+     * 
+     * @param messageid 
+     */
     async article(messageid?: string | number): Promise<{ code: number; headers: Headers; body: Buffer }> {
         const res = await this.runCommand("ARTICLE" + (messageid ? " " + messageid : ""));
         if ([220/*, 430, 412, 423, 420*/].includes(res.code)) {
@@ -344,7 +441,7 @@ export class NntpConnection extends EventEmitter {
 
             return {
                 code: res.code,
-                headers: this.parseHeader(res.data.slice(0, headBodySeparation).toString()),
+                headers: this._parseHeader(res.data.slice(0, headBodySeparation).toString()),
                 body: res.data.slice(headBodySeparation + 4)
             };
         } else {
@@ -352,6 +449,12 @@ export class NntpConnection extends EventEmitter {
         }
 
     }
+    /**
+     * The HEAD command selects an article according to the arguments and
+     * presents the headers to the client.
+     * 
+     * @param messageid 
+     */
     async head(messageid?: string | number): Promise<{ code: number; headers: Headers }> {
         const res = await this.runCommand("HEAD" + (messageid ? " " + messageid : ""));
         if ([221/*, 430, 412, 423, 420*/].includes(res.code)) {
@@ -359,7 +462,7 @@ export class NntpConnection extends EventEmitter {
             if (!res.data) throw new Error("no data on head");
             return {
                 code: res.code,
-                headers: this.parseHeader(res.data.toString())
+                headers: this._parseHeader(res.data.toString())
             };
 
         } else {
@@ -367,6 +470,12 @@ export class NntpConnection extends EventEmitter {
         }
 
     }
+    /**
+     * The BODY command selects an article according to the arguments and
+     * presents the body to the client.
+     * 
+     * @param messageid 
+     */
     async body(messageid?: string | number): Promise<{ code: number; body: Buffer }> {
         const res = await this.runCommand("BODY" + (messageid ? " " + messageid : ""));
         if ([222/*, 430, 412, 423, 420*/].includes(res.code)) {
@@ -380,10 +489,25 @@ export class NntpConnection extends EventEmitter {
         }
 
     }
+
+    /**
+     * The BODY command selects an article according to the arguments and
+     * presents the body to the client. Body is given as stream.
+     * @param messageid 
+     */
     bodyStream(messageid?: string | number): { stream: Readable; response: Promise<BasicResponse> } {
         return this.runCommandStream("BODY" + (messageid ? " " + messageid : ""));
 
     }
+
+    /**
+    * The STAT command selects an article according to the arguments.
+    * This command allows the client to determine whether an article exists
+    * and what its message-id is, without having to process an arbitrary 
+    * amount of text.
+    * 
+    * @param messageid 
+    */
     async stat(messageid?: string | number): Promise<StatResponse> {
         const res = await this.runCommand("STAT" + (messageid ? " " + messageid : ""));
         if ([223/*, 430, 412, 423, 420*/].includes(res.code)) {
@@ -409,6 +533,11 @@ export class NntpConnection extends EventEmitter {
         throw new Error("Not implemented");
 
     }*/
+
+    /**
+     * This command exists to help clients find out the current Coordinated
+     * Universal Time from the server's perspective.
+     */
     async date(): Promise<{ code: number; date: Date }> {
         const res = await this.runCommand("DATE");
         if (res.code == 111) {
@@ -423,6 +552,10 @@ export class NntpConnection extends EventEmitter {
         }
 
     }
+    /**
+     * This command provides a short summary of the commands that are
+     * understood by this implementation of the server.
+     */
     async help(): Promise<BasicResponse> {
         const res = await this.runCommand("HELP");
         if (res.code == 100) {
@@ -432,6 +565,12 @@ export class NntpConnection extends EventEmitter {
         }
 
     }
+
+    /**
+     * This command returns a list of newsgroups created on the server since
+     * the specified date and time.
+     * @param date 
+     */
     async newsgroups(date: Date): Promise<DataResponse>
     async newsgroups(date: string, time: string, gmt?: boolean): Promise<DataResponse>
     async newsgroups(date: Date | string, time?: string, gmt?: boolean): Promise<DataResponse> {

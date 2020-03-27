@@ -16,12 +16,20 @@ const CR = "\r".charCodeAt(0);
 const LF = "\n".charCodeAt(0);
 const DOT = ".".charCodeAt(0);
 
+/**
+ * Searches for needle in stream while also dot-unstuffing.
+ */
 export default class DotUnstuffingStreamSearch extends EventEmitter {
     _bufpos: number;
     _needle: Delimiter;
     _searchState: DelimiterSearchState;
     matches: number;
     maxMatches: number;
+
+    /**
+     * 
+     * @param needle Must me `Buffer.from("\r\n.\r\n")`
+     */
 
     constructor(needle: Buffer) {
         super();
@@ -32,11 +40,23 @@ export default class DotUnstuffingStreamSearch extends EventEmitter {
         this.maxMatches = Infinity;
         this.reset();
     }
+    /**
+     * Resets internal state
+     */
     reset(): void {
         this._bufpos = 0;
         this._searchState = DelimiterSearchState.START;
         this.matches = 0;
     }
+    /**
+     * Processes `chunk`.
+     * @param chunk 
+     * @param pos 
+     * 
+     * @fires info
+     * 
+     * @returns The last processed index in chunk + 1.
+     */
     push(chunk: Buffer, pos?: number): number {
         let r = 0;
         if (!Buffer.isBuffer(chunk))
@@ -48,6 +68,10 @@ export default class DotUnstuffingStreamSearch extends EventEmitter {
         }
         return r;
     }
+    /**
+     * @private
+     * @param data 
+     */
     _feed(data: Buffer): number {
         let startData = this._bufpos;
         let lastData = this._bufpos - 1;
