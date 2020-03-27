@@ -9,6 +9,7 @@ for (let i = 0; i < dta.length; i++) {
 	}
 
 }
+//dta = Buffer.from("hallo\r\nhallo2\r\n..hallo\r\n.d\r\n")
 class RandData extends Readable {
 	size: number;
 	constructor(size: number) {

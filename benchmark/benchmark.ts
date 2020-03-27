@@ -1,6 +1,7 @@
 import { NntpConnection } from "..";
 import * as NNTP from "nntp";
 import * as node_NNTP from "node-nntp";
+import * as util from "util";
 import entepe_NNTP, { interfaces } from 'entepe'
 require("./NNTPTestServer");
 
@@ -20,8 +21,7 @@ ResponseNN.createFromString = function (string) {
     return new ResponseNN(parseInt(matches[1], 10), matches[2]);
 };
 
-async function main() {
-    console.log("(ours)")
+async function nntp_fast() {
     const conn = new NntpConnection({ dotUnstuffing: false });
     await conn.connect("127.0.0.1", 1337);
 
@@ -30,7 +30,7 @@ async function main() {
 
     let prev_promise = Promise.resolve();
 
-    for (let i = 0; i < 1000; i++) {
+    for (let i = 0; i < 2000; i++) {
         let promise = new Promise<void>(async (resolve, reject) => {
             const body = conn.bodyStream(23131)
             //console.log(await body.promise);
@@ -40,7 +40,7 @@ async function main() {
             body.stream.on("error", (err) => {
                 console.log(err)
             });
-            body.stream.on("data", (data) => count += data.length)
+            body.stream.on("data", (data) => { count += data.length; /*console.log(util.inspect(data.toString()))*/ })
         });
         await prev_promise;
         prev_promise = promise;
@@ -49,11 +49,10 @@ async function main() {
     await prev_promise;
 
     let end = Date.now();
-    console.log((count / 1024 / 1024) / ((end - start) / 1000) + " MiB/s (ours without dot unstuffing)")
+    console.log("nntp-fast (without dot unstuffing): " + (count / 1024 / 1024) / ((end - start) / 1000) + " MiB/s")
     await conn.runCommand("QUIT")
 }
-async function main_unstuffing() {
-    console.log("(ours)")
+async function nntp_fast_unstuffing() {
     const conn = new NntpConnection({ dotUnstuffing: true });
     await conn.connect("127.0.0.1", 1337);
 
@@ -62,7 +61,7 @@ async function main_unstuffing() {
 
     let prev_promise = Promise.resolve();
 
-    for (let i = 0; i < 1000; i++) {
+    for (let i = 0; i < 2000; i++) {
         let promise = new Promise<void>(async (resolve, reject) => {
             const body = conn.bodyStream(23131)
             //console.log(await body.promise);
@@ -72,7 +71,7 @@ async function main_unstuffing() {
             body.stream.on("error", (err) => {
                 console.log(err)
             });
-            body.stream.on("data", (data) => count += data.length)
+            body.stream.on("data", (data) => { count += data.length; /*console.log(util.inspect(data.toString()))*/ })
         });
         await prev_promise;
         prev_promise = promise;
@@ -81,23 +80,23 @@ async function main_unstuffing() {
     await prev_promise;
 
     let end = Date.now();
-    console.log((count / 1024 / 1024) / ((end - start) / 1000) + " MiB/s (ours with dot unstuffing)")
+    console.log("nntp-fast (with dot unstuffing): " + (count / 1024 / 1024) / ((end - start) / 1000) + " MiB/s");
     await conn.runCommand("QUIT")
 }
 
 function main_nntp() {
     return new Promise((resolve, reject) => {
-        console.log("(nntp)")
         var c = new NNTP();
         c.on('ready', async function () {
             let count = 0;
             let start = Date.now();
             let prev_promise = Promise.resolve();
-            for (let i = 0; i < 1000; i++) {
+            for (let i = 0; i < 2000; i++) {
                 let promise = new Promise<void>(async (resolve2, reject) => {
                     c.body("23131", function (err, n, id, body) {
                         if (err) throw err;
                         count += body.length;
+                        //console.log(util.inspect(body.toString()));
                         resolve2();
                     });
                 });
@@ -106,7 +105,7 @@ function main_nntp() {
             }
             await prev_promise;
             let end = Date.now();
-            console.log((count / 1024 / 1024) / ((end - start) / 1000) + " MiB/s (nntp)");
+            console.log("nntp (without dot unstuffing): " + (count / 1024 / 1024) / ((end - start) / 1000) + " MiB/s");
             c.end();
 
         });
@@ -114,7 +113,6 @@ function main_nntp() {
             console.log('Error: ' + err);
         });
         c.on('close', function (had_err) {
-            console.log('Connection closed');
             resolve();
         });
         c.connect({
@@ -125,7 +123,6 @@ function main_nntp() {
 }
 async function main_node_nntp() {
     return new Promise((resolve, reject) => {
-        console.log("(node-nntp)")
         var c = new node_NNTP({
             host: '127.0.0.1',
             port: 1337
@@ -134,17 +131,18 @@ async function main_node_nntp() {
             let count = 0;
             let start = Date.now();
 
-            for (let i = 0; i < 50; i++) {
+            for (let i = 0; i < 100; i++) {
                 await new Promise(async (resolve2, reject) => {
                     c.article("23131", function (err, response) {
                         if (err) throw err;
                         count += response.body[0].length;
+                        //console.log(util.inspect(response.body));
                         resolve2();
                     });
                 });
             }
             let end = Date.now();
-            console.log((count / 1024 / 1024) / ((end - start) / 1000) + " MiB/s (node-nntp)");
+            console.log("node-nntp (without dot unstuffing): " + (count / 1024 / 1024) / ((end - start) / 1000) + " MiB/s");
 
             c.disconnect(resolve);
         });
@@ -152,7 +150,6 @@ async function main_node_nntp() {
 
 }
 async function main_newsie() {
-    console.log("(newsie)")
     const Client = require('newsie').default
     const client = new Client({
         host: '127.0.0.1',
@@ -161,18 +158,18 @@ async function main_newsie() {
     await client.connect()
     let count = 0;
     let start = Date.now();
-    for (let i = 0; i < 1000; i++) {
+    for (let i = 0; i < 100; i++) {
         let response = await client.body("23131")
         count += response.article.body[0].length;
+        //console.log(util.inspect(response.article.body));
     }
     //console.log(response)
     let end = Date.now();
-    console.log((count / 1024 / 1024) / ((end - start) / 1000) + " MiB/s (newsie)");
+    console.log("newsie (with dot unstuffing): " + (count / 1024 / 1024) / ((end - start) / 1000) + " MiB/s");
     await client.quit();
 
 }
 async function main_entepe() {
-    console.log("(entepe)")
     const connection = new entepe_NNTP({
         host: '127.0.0.1',
         port: 1337
@@ -183,14 +180,15 @@ async function main_entepe() {
     for (let i = 0; i < 10; i++) {
         let response = await connection.getArticleBody("23131")
         count += response.raw.length;
+        //console.log(util.inspect(response.raw));
     }
     //console.log(response)
     let end = Date.now();
-    console.log((count / 1024 / 1024) / ((end - start) / 1000) + " MiB/s (entepe)");
+    console.log("entepe (without dot unstuffing): " + (count / 1024 / 1024) / ((end - start) / 1000) + " MiB/s");
 
     await connection.quit();
 
 }
 
 
-main().then(main_unstuffing).then(main_nntp).then(main_node_nntp).then(main_newsie).then(main_entepe).then(console.log, console.log);
+nntp_fast().then(nntp_fast_unstuffing).then(main_nntp).then(main_node_nntp).then(main_newsie).then(main_entepe).then(console.log, console.log);
