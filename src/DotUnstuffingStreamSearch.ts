@@ -1,7 +1,5 @@
 import { EventEmitter } from "events";
 
-const CRLF = Buffer.from("\r\n");
-
 enum DelimiterSearchState {
     START,
     CR,
@@ -21,7 +19,7 @@ const DOT = ".".charCodeAt(0);
 export default class DotUnstuffingStreamSearch extends EventEmitter {
     _bufpos: number;
     _needle: Delimiter;
-    _search_state: DelimiterSearchState;
+    _searchState: DelimiterSearchState;
     matches: number;
     maxMatches: number;
 
@@ -34,17 +32,16 @@ export default class DotUnstuffingStreamSearch extends EventEmitter {
         this.maxMatches = Infinity;
         this.reset();
     }
-    reset() {
+    reset(): void {
         this._bufpos = 0;
-        this._search_state = DelimiterSearchState.START;
+        this._searchState = DelimiterSearchState.START;
         this.matches = 0;
     }
-    push(chunk: Buffer, pos?: number) {
-        let r: number = 0;
-        let chlen: number;
+    push(chunk: Buffer, pos?: number): number {
+        let r = 0;
         if (!Buffer.isBuffer(chunk))
             chunk = Buffer.from(chunk, 'binary');
-        chlen = chunk.length;
+        const chlen = chunk.length;
         this._bufpos = pos || 0;
         while (r != chlen && this.matches < this.maxMatches) {
             r = this._feed(chunk);
@@ -57,10 +54,10 @@ export default class DotUnstuffingStreamSearch extends EventEmitter {
         while (this._bufpos < data.length) {
             const symbol = data[this._bufpos];
 
-            switch (this._search_state) {
+            switch (this._searchState) {
                 case DelimiterSearchState.START:
                     if (symbol == CR) {
-                        this._search_state = DelimiterSearchState.CR;
+                        this._searchState = DelimiterSearchState.CR;
                     } else {
                         lastData = this._bufpos;
                     }
@@ -70,9 +67,9 @@ export default class DotUnstuffingStreamSearch extends EventEmitter {
                         if (this._needle == Delimiter.CRLF) {
                             // Found CRLF
                             console.log("unsupported CRLF needl in DotUnstuffingStreamSearch")
-                            this._search_state = DelimiterSearchState.START;
+                            this._searchState = DelimiterSearchState.START;
                         } else {
-                            this._search_state = DelimiterSearchState.CR_LF;
+                            this._searchState = DelimiterSearchState.CR_LF;
                         }
                     } else {
                         console.log("Malformed Data: Standalone CR character not allowed")
@@ -83,20 +80,20 @@ export default class DotUnstuffingStreamSearch extends EventEmitter {
                         this.emit("info", false, Buffer.from("\r"), 0, 1);
 
                         if (symbol == CR) {
-                            this._search_state = DelimiterSearchState.CR;
+                            this._searchState = DelimiterSearchState.CR;
                         } else {
                             startData = this._bufpos;
                             lastData = this._bufpos;
-                            this._search_state = DelimiterSearchState.START;
+                            this._searchState = DelimiterSearchState.START;
                         }
                     }
                     break;
                 case DelimiterSearchState.CR_LF:
                     if (symbol == DOT) {
-                        this._search_state = DelimiterSearchState.CR_LF_DOT;
+                        this._searchState = DelimiterSearchState.CR_LF_DOT;
                     } else {
                         if (symbol == CR) {
-                            this._search_state = DelimiterSearchState.CR;
+                            this._searchState = DelimiterSearchState.CR;
                         } else {
                             //false alarm
                             if (startData <= lastData) {
@@ -105,15 +102,15 @@ export default class DotUnstuffingStreamSearch extends EventEmitter {
                             this.emit("info", false, Buffer.from("\r\n"), 0, 2);
                             startData = this._bufpos;
                             lastData = this._bufpos;
-                            this._search_state = DelimiterSearchState.START;
+                            this._searchState = DelimiterSearchState.START;
                         }
                     }
                     break;
                 case DelimiterSearchState.CR_LF_DOT:
                     if (symbol == CR) {
-                        this._search_state = DelimiterSearchState.CR_LF_DOT_CR;
+                        this._searchState = DelimiterSearchState.CR_LF_DOT_CR;
                     } else {
-                        this._search_state = DelimiterSearchState.START;
+                        this._searchState = DelimiterSearchState.START;
 
                         // dot stuffing must be undone https://tools.ietf.org/html/rfc3977#section-3.1.1
 
@@ -131,7 +128,7 @@ export default class DotUnstuffingStreamSearch extends EventEmitter {
                         // Found MLDB delimiter
 
                         this.matches++;
-                        this._search_state = DelimiterSearchState.START;
+                        this._searchState = DelimiterSearchState.START;
                         this.emit("info", true, data, startData, lastData + 1);
 
                         startData = this._bufpos + 1;
@@ -149,9 +146,9 @@ export default class DotUnstuffingStreamSearch extends EventEmitter {
                         this.emit("info", false, Buffer.from("\r"), 0, 1);
 
                         if (symbol == CR) {
-                            this._search_state = DelimiterSearchState.CR;
+                            this._searchState = DelimiterSearchState.CR;
                         } else {
-                            this._search_state = DelimiterSearchState.START;
+                            this._searchState = DelimiterSearchState.START;
                             startData = this._bufpos;
                             lastData = this._bufpos;
                         }

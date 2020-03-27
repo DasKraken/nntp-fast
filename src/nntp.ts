@@ -1,5 +1,5 @@
 import * as net from "net";
-import { PassThrough, Writable, Readable } from "stream";
+import { PassThrough, Readable } from "stream";
 import * as util from "util";
 import * as StreamSearch from "streamsearch";
 import DotUnstuffingStreamSearch from "./DotUnstuffingStreamSearch";
@@ -10,17 +10,7 @@ enum Delimiter {
     CRLF, // \r\n
     MLDB  // multiline datablock \r\n.\r\n
 }
-enum DelimiterSearchState {
-    START,
-    CR,
-    CR_LF,
-    CR_LF_DOT,
-    CR_LF_DOT_CR
-}
 
-const CR = "\r".charCodeAt(0);
-const LF = "\n".charCodeAt(0);
-const DOT = ".".charCodeAt(0);
 const RES_CODE_ML = [100, 101, 215, 220, 221, 222, 224, 225, 230, 231];
 
 interface ResponseHandler {
@@ -29,48 +19,63 @@ interface ResponseHandler {
     MldbStream?: PassThrough;
 }
 
+interface BasicResponse {
+    code: number;
+    message: string;
+}
+interface DataResponse extends BasicResponse {
+    data?: Buffer;
+}
+interface StatResponse {
+    code: number;
+    articleNumber: number;
+    articleId: string;
+
+}
+type Headers = Record<string, string>;
+
+
 export class NntpConnection extends EventEmitter {
 
-    connected: boolean;
-    connected_response: { code: number, message: string };
+    _connected: boolean;
+    _connectedResponse: BasicResponse;
     socket: net.Socket;
 
     responseQueue: ResponseHandler[] = [];
 
-    buffer: Buffer[] = [];
-    delimiter_search_type: Delimiter = Delimiter.CRLF;
-    stripDots: boolean = true;
+    _buffer: Buffer[] = [];
+    _delimiterSearchType: Delimiter = Delimiter.CRLF;
 
-    streamsearch_CRLF: StreamSearch;
-    streamsearch_MLDB: DotUnstuffingStreamSearch;
+    _streamsearchCRLF: StreamSearch;
+    _streamsearchMLDB: DotUnstuffingStreamSearch;
     constructor(options?: { dotUnstuffing?: boolean }) {
         super();
         if (!options) options = {};
         if (options.dotUnstuffing === undefined) options.dotUnstuffing = true;
 
-        this.streamsearch_CRLF = new StreamSearch(Buffer.from("\r\n"));
+        this._streamsearchCRLF = new StreamSearch(Buffer.from("\r\n"));
         if (options.dotUnstuffing) {
-            this.streamsearch_MLDB = new DotUnstuffingStreamSearch(Buffer.from("\r\n.\r\n"));
+            this._streamsearchMLDB = new DotUnstuffingStreamSearch(Buffer.from("\r\n.\r\n"));
         } else {
-            this.streamsearch_MLDB = new StreamSearch(Buffer.from("\r\n.\r\n"));
+            this._streamsearchMLDB = new StreamSearch(Buffer.from("\r\n.\r\n"));
         }
-        this.streamsearch_CRLF.maxMatches = 1;
-        this.streamsearch_MLDB.maxMatches = 1;
-        this.streamsearch_CRLF.on("info", this.onInfoCRLF.bind(this));
-        this.streamsearch_MLDB.on("info", this.onInfoMLDB.bind(this));
+        this._streamsearchCRLF.maxMatches = 1;
+        this._streamsearchMLDB.maxMatches = 1;
+        this._streamsearchCRLF.on("info", this._onInfoCRLF.bind(this));
+        this._streamsearchMLDB.on("info", this._onInfoMLDB.bind(this));
     }
 
-    connect(host: string, port: number): Promise<{ code: number, message: string }> {
-        if (this.connected) {
-            return Promise.resolve(this.connected_response);
+    connect(host: string, port: number): Promise<BasicResponse> {
+        if (this._connected) {
+            return Promise.resolve(this._connectedResponse);
         }
         return new Promise((resolve, reject) => {
 
             // Initial Handler
             const handler: ResponseHandler = {
                 handleResponse: (code: number, message: string) => {
-                    this.connected = true;
-                    this.connected_response = { code, message };
+                    this._connected = true;
+                    this._connectedResponse = { code, message };
                     resolve({ code, message });
                 }
             }
@@ -80,18 +85,18 @@ export class NntpConnection extends EventEmitter {
                 // 'connect' listener.
 
             });
-            this.socket.on('data', (data) => { this.onData(data) });
+            this.socket.on('data', (data) => { this._onData(data) });
             this.socket.on('end', () => {
-                this.connected = false;
+                this._connected = false;
                 this.emit("end");
             });
             this.socket.on('error', (err) => {
-                this.connected = false;
+                this._connected = false;
                 reject();
                 this.emit("error", err);
             });
             this.socket.on('timeout', () => {
-                this.connected = false;
+                this._connected = false;
                 this.socket.end();
                 this.emit("timeout");
             });
@@ -99,51 +104,51 @@ export class NntpConnection extends EventEmitter {
     }
 
 
-    onData(data: Buffer) {
+    _onData(data: Buffer): void {
         let r: number;
-        if (this.delimiter_search_type == Delimiter.CRLF) {
-            r = this.streamsearch_CRLF.push(data);
-            if (this.streamsearch_CRLF.matches == 1) {
-                if (this.handleResponse(Buffer.concat(this.buffer).toString())) {
+        if (this._delimiterSearchType == Delimiter.CRLF) {
+            r = this._streamsearchCRLF.push(data);
+            if (this._streamsearchCRLF.matches == 1) {
+                if (this._handleResponse(Buffer.concat(this._buffer).toString())) {
                     // returns true if multi line data block is expected
-                    this.delimiter_search_type = Delimiter.MLDB;
+                    this._delimiterSearchType = Delimiter.MLDB;
                 } else {
                     this.responseQueue.splice(0, 1);
                 }
-                this.buffer = [];
-                this.streamsearch_CRLF.reset();
+                this._buffer = [];
+                this._streamsearchCRLF.reset();
             }
         } else {
-            r = this.streamsearch_MLDB.push(data);
-            if (this.streamsearch_MLDB.matches == 1) {
-                let stream = this.responseQueue[0].MldbStream;
+            r = this._streamsearchMLDB.push(data);
+            if (this._streamsearchMLDB.matches == 1) {
+                const stream = this.responseQueue[0].MldbStream;
                 stream?.end();
                 this.responseQueue.splice(0, 1);
-                this.delimiter_search_type = Delimiter.CRLF;
-                this.streamsearch_MLDB.reset();
+                this._delimiterSearchType = Delimiter.CRLF;
+                this._streamsearchMLDB.reset();
             }
         }
 
         if (r < data.length) {
             // Data after delimiter
-            this.onData(data.slice(r));
+            this._onData(data.slice(r));
         }
     }
 
-    onInfoCRLF(isMatch: boolean, data: Buffer, start: number, end: number) {
+    _onInfoCRLF(isMatch: boolean, data: Buffer, start: number, end: number): void {
         if (data) {
             if (start == 0 && end == data.length) {
-                this.buffer.push(data);
+                this._buffer.push(data);
             } else {
-                this.buffer.push(data.slice(start, end));
+                this._buffer.push(data.slice(start, end));
             }
         }
 
         // Note: never call reset() inside this callback
 
     }
-    onInfoMLDB(isMatch: boolean, data: Buffer, start: number, end: number) {
-        let stream = this.responseQueue[0].MldbStream;
+    _onInfoMLDB(isMatch: boolean, data: Buffer, start: number, end: number): void {
+        const stream = this.responseQueue[0].MldbStream;
         if (data) {
             if (start == 0 && end == data.length) {
                 stream?.write(data);
@@ -156,7 +161,7 @@ export class NntpConnection extends EventEmitter {
 
     }
 
-    getCode(response: string) {
+    getCode(response: string): BasicResponse {
         const res = /^([0-9]{3}) ([^\r\n]*)$/.exec(response);
         if (res) {
             return { code: parseInt(res[1]), message: res[2] };
@@ -165,21 +170,21 @@ export class NntpConnection extends EventEmitter {
         }
     }
 
-    parseHeader(head_string: string) {
-        const headers: any = {};
-        for (const entry of head_string.split("\r\n")) {
-            const first_colon = entry.indexOf(': ');
-            headers[entry.substr(0, first_colon)] = entry.substr(first_colon + 2);
+    parseHeader(headString: string): Headers {
+        const headers: Headers = {};
+        for (const entry of headString.split("\r\n")) {
+            const firstColon = entry.indexOf(': ');
+            headers[entry.substr(0, firstColon)] = entry.substr(firstColon + 2);
         }
         return headers;
     }
 
-    handleResponse(response: string) {
+    _handleResponse(response: string): boolean {
         const { code, message } = this.getCode(response);
         const responseHandler = this.responseQueue[0];
         if (this.responseQueue.length == 0) {
             this.emit("error", new Error(`Unexpected response: ${code} ${message}`));
-            return;
+            return false;
         }
 
         if (RES_CODE_ML.includes(code) || (responseHandler.decideMldb && responseHandler.decideMldb(code))) {
@@ -188,7 +193,7 @@ export class NntpConnection extends EventEmitter {
             } else {
                 // mldb not expected but given: wait for end before calling callback
                 responseHandler.MldbStream = new PassThrough();
-                let responseData: Buffer[] = []
+                const responseData: Buffer[] = []
                 responseHandler.MldbStream.on("data", (data) => { responseData.push(data) })
                 responseHandler.MldbStream.on("end", () => {
                     responseHandler.handleResponse(code, message, Buffer.concat(responseData));
@@ -203,8 +208,8 @@ export class NntpConnection extends EventEmitter {
 
     }
 
-    runCommand(command: string, decideMldb?: (code: number) => boolean): Promise<{ code: number, message: string, data?: Buffer }> {
-        return new Promise((resolve, reject) => {
+    runCommand(command: string, decideMldb?: (code: number) => boolean): Promise<DataResponse> {
+        return new Promise((resolve) => {
             const handler: ResponseHandler = {
                 handleResponse: (code: number, message: string, data?: Buffer) => {
                     resolve({ code, message, data });
@@ -216,9 +221,9 @@ export class NntpConnection extends EventEmitter {
             this.socket.write(command + "\r\n");
         });
     }
-    runCommandStream(command: string, decideMldb?: (code: number) => boolean): { stream: Readable, promise: Promise<{ code: number, message: string }> } {
+    runCommandStream(command: string, decideMldb?: (code: number) => boolean): { stream: Readable; response: Promise<BasicResponse> } {
         const stream = new PassThrough();
-        const promise = new Promise<{ code: number, message: string }>((resolve, reject) => {
+        const response = new Promise<BasicResponse>((resolve): void => {
             const handler: ResponseHandler = {
                 handleResponse: (code: number, message: string) => {
                     resolve({ code, message });
@@ -231,10 +236,10 @@ export class NntpConnection extends EventEmitter {
         });
 
 
-        return { stream, promise };
+        return { stream, response };
     }
 
-    async capabilities(keyword?: string) {
+    async capabilities(keyword?: string): Promise<{ code: number; message: string; body?: Buffer }> {
         const res = await this.runCommand("CAPABILITIES" + (keyword ? " " + keyword : ""));
         if (res.code == 101) {
             return res;
@@ -243,7 +248,7 @@ export class NntpConnection extends EventEmitter {
         }
 
     }
-    async modeReader() {
+    async modeReader(): Promise<BasicResponse> {
         const res = await this.runCommand("MODE READER");
         if ([200, 201/*, 502*/].includes(res.code)) {
             return res;
@@ -252,7 +257,7 @@ export class NntpConnection extends EventEmitter {
         }
 
     }
-    async quit() {
+    async quit(): Promise<BasicResponse> {
         const res = await this.runCommand("QUIT");
         if (205 == res.code) {
             return res;
@@ -261,10 +266,10 @@ export class NntpConnection extends EventEmitter {
         }
 
     }
-    async group(group: string) {
+    async group(group: string): Promise<{ code: number; number: number; low: number; high: number; group: string }> {
         const res = await this.runCommand("GROUP " + group);
         if (res.code == 211) {
-            let m = /^([0-9]+) ([0-9]+) ([0-9]+) (.+)$/.exec(res.message);
+            const m = /^([0-9]+) ([0-9]+) ([0-9]+) (.+)$/.exec(res.message);
             if (m == null) {
                 throw "cant parse " + util.inspect(res.message);
             }
@@ -280,73 +285,74 @@ export class NntpConnection extends EventEmitter {
         }
 
     }
-    async listgroup(group?: string, range?: string) {
-        const res = await this.runCommand("LISTGROUP" + (group ? " " + group : ""), code => code == 211); // Multiline data if code 221 returned
+    async listgroup(group?: string, range?: string): Promise<{ code: number; message: string; articles: number[] }> {
+        const res = await this.runCommand("LISTGROUP" + (group ? " " + group + (range ? " " + range : "") : ""), code => code == 211); // Multiline data if code 221 returned
         if (res.code == 211) {
             // let m = /^([0-9]+) ([0-9]+) ([0-9]+) (.+)$/.exec(res.message);
             // ^ not on all servers supportes
+            if (!res.data) throw new Error("no data on listgroup");
             return {
                 code: res.code,
                 message: res.message,
-                artices: res.data?.toString().split("\r\n").map(n => parseInt(n))
+                articles: res.data.toString().split("\r\n").map((n: string): number => parseInt(n))
             };
         } else {
             throw res;
         }
 
     }
-    async last() {
+    async last(): Promise<StatResponse> {
         const res = await this.runCommand("LAST");
         if ([223/*, 412, 420, 422*/].includes(res.code)) {
-            let m = /^([0-9]+) (<[^ ]+>)/.exec(res.message);
+            const m = /^([0-9]+) (<[^ ]+>)/.exec(res.message);
             if (m == null) {
                 throw "cant parse " + util.inspect(res.message);
             }
             return {
                 code: res.code,
-                article_number: parseInt(m[1]),
-                article_id: m[2]
+                articleNumber: parseInt(m[1]),
+                articleId: m[2]
             };
         } else {
             throw res;
         }
 
     }
-    async next() {
+    async next(): Promise<StatResponse> {
         const res = await this.runCommand("NEXT");
         if ([223/*, 412, 420, 422*/].includes(res.code)) {
-            let m = /^([0-9]+) (<[^ ]+>)/.exec(res.message);
+            const m = /^([0-9]+) (<[^ ]+>)/.exec(res.message);
             if (m == null) {
                 throw "cant parse " + util.inspect(res.message);
             }
             return {
                 code: res.code,
-                article_number: parseInt(m[1]),
-                article_id: m[2]
+                articleNumber: parseInt(m[1]),
+                articleId: m[2]
             };
         } else {
             throw res;
         }
 
     }
-    async article(messageid?: string | number) {
+    async article(messageid?: string | number): Promise<{ code: number; headers: Headers; body: Buffer }> {
         const res = await this.runCommand("ARTICLE" + (messageid ? " " + messageid : ""));
         if ([220/*, 430, 412, 423, 420*/].includes(res.code)) {
             if (!res.data) throw new Error("no data on article");
 
-            const head_body_separation = res.data.indexOf("\r\n\r\n");
+            const headBodySeparation = res.data.indexOf("\r\n\r\n");
 
             return {
                 code: res.code,
-                headers: this.parseHeader(res.data.slice(0, head_body_separation).toString()),
-                body: res.data.slice(head_body_separation + 4)
+                headers: this.parseHeader(res.data.slice(0, headBodySeparation).toString()),
+                body: res.data.slice(headBodySeparation + 4)
             };
         } else {
             throw res;
         }
 
     }
-    async head(messageid?: string | number) {
+    async head(messageid?: string | number): Promise<{ code: number; headers: Headers }> {
         const res = await this.runCommand("HEAD" + (messageid ? " " + messageid : ""));
         if ([221/*, 430, 412, 423, 420*/].includes(res.code)) {
 
@@ -361,7 +367,7 @@ export class NntpConnection extends EventEmitter {
         }
 
     }
-    async body(messageid?: string | number) {
+    async body(messageid?: string | number): Promise<{ code: number; body: Buffer }> {
         const res = await this.runCommand("BODY" + (messageid ? " " + messageid : ""));
         if ([222/*, 430, 412, 423, 420*/].includes(res.code)) {
             if (!res.data) throw new Error("no data on body");
@@ -374,39 +380,39 @@ export class NntpConnection extends EventEmitter {
         }
 
     }
-    bodyStream(messageid?: string | number) {
+    bodyStream(messageid?: string | number): { stream: Readable; response: Promise<BasicResponse> } {
         return this.runCommandStream("BODY" + (messageid ? " " + messageid : ""));
 
     }
-    async stat(messageid?: string | number) {
+    async stat(messageid?: string | number): Promise<StatResponse> {
         const res = await this.runCommand("STAT" + (messageid ? " " + messageid : ""));
         if ([223/*, 430, 412, 423, 420*/].includes(res.code)) {
-            let m = /^([0-9]+) (<[^ ]+>)/.exec(res.message);
+            const m = /^([0-9]+) (<[^ ]+>)/.exec(res.message);
             if (m == null) {
                 throw "cant parse " + util.inspect(res.message);
             }
             return {
                 code: res.code,
-                article_number: parseInt(m[1]),
-                article_id: m[2]
+                articleNumber: parseInt(m[1]),
+                articleId: m[2]
             };
         } else {
             throw res;
         }
 
     }
-    async post(headers, data) {
+    /*async post(headers: Headers, data: Buffer): Promise<BasicResponse> {
         throw new Error("Not implemented");
 
     }
-    async ihave(message_id, headers, data) {
+    async ihave(message_id: string, headers: Headers, data: Buffer): Promise<BasicResponse> {
         throw new Error("Not implemented");
 
-    }
-    async date() {
+    }*/
+    async date(): Promise<{ code: number; date: Date }> {
         const res = await this.runCommand("DATE");
         if (res.code == 111) {
-            let date = /^([0-9]{4})([0-9]{2})([0-9]{2})([0-9]{2})([0-9]{2})([0-9]{2})/.exec(res.message);
+            const date = /^([0-9]{4})([0-9]{2})([0-9]{2})([0-9]{2})([0-9]{2})([0-9]{2})/.exec(res.message);
             if (!date) throw new Error("cant parse date: " + res.message);
             return {
                 code: res.code,
@@ -417,7 +423,7 @@ export class NntpConnection extends EventEmitter {
         }
 
     }
-    async help() {
+    async help(): Promise<BasicResponse> {
         const res = await this.runCommand("HELP");
         if (res.code == 100) {
             return res;
@@ -426,9 +432,9 @@ export class NntpConnection extends EventEmitter {
         }
 
     }
-    async newsgroups(date: Date)
-    async newsgroups(date: string, time: string, gmt?: boolean)
-    async newsgroups(date: Date | string, time?: string, gmt?: boolean) {
+    async newsgroups(date: Date): Promise<DataResponse>
+    async newsgroups(date: string, time: string, gmt?: boolean): Promise<DataResponse>
+    async newsgroups(date: Date | string, time?: string, gmt?: boolean): Promise<DataResponse> {
         if (date instanceof Date) {
             time = date.getUTCHours().toString().padStart(2, "0") + date.getUTCMinutes().toString().padStart(2, "0") + date.getUTCSeconds().toString().padStart(2, "0");
             date = date.getUTCFullYear().toString().padStart(4, "0") + (date.getUTCMonth() + 1).toString().padStart(2, "0") + date.getUTCDay().toString().padStart(2, "0");
@@ -446,11 +452,5 @@ export class NntpConnection extends EventEmitter {
             throw res;
         }
 
-    }
-
-
-    _ping() {
-        // ping to keep connection alive
-        //conn.socket.write("DATE\r\n");
     }
 }
