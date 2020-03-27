@@ -238,7 +238,7 @@ export class NntpConnection extends EventEmitter {
     }
     async modeReader() {
         const res = await this.runCommand("MODE READER");
-        if ([200, 201, 502].includes(res.code)) {
+        if ([200, 201/*, 502*/].includes(res.code)) {
             return res;
         } else {
             throw res;
@@ -290,20 +290,16 @@ export class NntpConnection extends EventEmitter {
     }
     async last() {
         const res = await this.runCommand("LAST");
-        if ([223, 412, 420, 422].includes(res.code)) {
-            if (res.code == 223) {
-                let m = /^([0-9]+) (<[^ ]+>)/.exec(res.message);
-                if (m == null) {
-                    throw "cant parse " + util.inspect(res.message);
-                }
-                return {
-                    code: res.code,
-                    article_number: parseInt(m[1]),
-                    article_id: m[2]
-                };
-            } else {
-                return res;
+        if ([223/*, 412, 420, 422*/].includes(res.code)) {
+            let m = /^([0-9]+) (<[^ ]+>)/.exec(res.message);
+            if (m == null) {
+                throw "cant parse " + util.inspect(res.message);
             }
+            return {
+                code: res.code,
+                article_number: parseInt(m[1]),
+                article_id: m[2]
+            };
         } else {
             throw res;
         }
@@ -311,20 +307,16 @@ export class NntpConnection extends EventEmitter {
     }
     async next() {
         const res = await this.runCommand("NEXT");
-        if ([223, 412, 420, 422].includes(res.code)) {
-            if (res.code == 223) {
-                let m = /^([0-9]+) (<[^ ]+>)/.exec(res.message);
-                if (m == null) {
-                    throw "cant parse " + util.inspect(res.message);
-                }
-                return {
-                    code: res.code,
-                    article_number: parseInt(m[1]),
-                    article_id: m[2]
-                };
-            } else {
-                return res;
+        if ([223/*, 412, 420, 422*/].includes(res.code)) {
+            let m = /^([0-9]+) (<[^ ]+>)/.exec(res.message);
+            if (m == null) {
+                throw "cant parse " + util.inspect(res.message);
             }
+            return {
+                code: res.code,
+                article_number: parseInt(m[1]),
+                article_id: m[2]
+            };
         } else {
             throw res;
         }
@@ -332,20 +324,16 @@ export class NntpConnection extends EventEmitter {
     }
     async article(messageid?: string | number) {
         const res = await this.runCommand("ARTICLE" + (messageid ? " " + messageid : ""));
-        if ([220, 430, 412, 423, 420].includes(res.code)) {
-            if (res.code == 220) {
-                if (!res.data) throw new Error("no data on article");
+        if ([220/*, 430, 412, 423, 420*/].includes(res.code)) {
+            if (!res.data) throw new Error("no data on article");
 
-                const head_body_separation = res.data.indexOf("\r\n\r\n");
+            const head_body_separation = res.data.indexOf("\r\n\r\n");
 
-                return {
-                    code: res.code,
-                    headers: this.parseHeader(res.data.slice(0, head_body_separation).toString()),
-                    body: res.data.slice(head_body_separation + 4)
-                };
-            } else {
-                return res;
-            }
+            return {
+                code: res.code,
+                headers: this.parseHeader(res.data.slice(0, head_body_separation).toString()),
+                body: res.data.slice(head_body_separation + 4)
+            };
         } else {
             throw res;
         }
@@ -353,16 +341,14 @@ export class NntpConnection extends EventEmitter {
     }
     async head(messageid?: string | number) {
         const res = await this.runCommand("HEAD" + (messageid ? " " + messageid : ""));
-        if ([221, 430, 412, 423, 420].includes(res.code)) {
-            if (res.code == 221) {
-                if (!res.data) throw new Error("no data on head");
-                return {
-                    code: res.code,
-                    headers: this.parseHeader(res.data.toString())
-                };
-            } else {
-                return res;
-            }
+        if ([221/*, 430, 412, 423, 420*/].includes(res.code)) {
+
+            if (!res.data) throw new Error("no data on head");
+            return {
+                code: res.code,
+                headers: this.parseHeader(res.data.toString())
+            };
+
         } else {
             throw res;
         }
@@ -370,16 +356,12 @@ export class NntpConnection extends EventEmitter {
     }
     async body(messageid?: string | number) {
         const res = await this.runCommand("BODY" + (messageid ? " " + messageid : ""));
-        if ([222, 430, 412, 423, 420].includes(res.code)) {
-            if (res.code == 222) {
-                if (!res.data) throw new Error("no data on body");
-                return {
-                    code: res.code,
-                    body: res.data
-                };
-            } else {
-                return res;
-            }
+        if ([222/*, 430, 412, 423, 420*/].includes(res.code)) {
+            if (!res.data) throw new Error("no data on body");
+            return {
+                code: res.code,
+                body: res.data
+            };
         } else {
             throw res;
         }
@@ -391,20 +373,16 @@ export class NntpConnection extends EventEmitter {
     }
     async stat(messageid?: string | number) {
         const res = await this.runCommand("STAT" + (messageid ? " " + messageid : ""));
-        if ([223, 430, 412, 423, 420].includes(res.code)) {
-            if (res.code == 223) {
-                let m = /^([0-9]+) (<[^ ]+>)/.exec(res.message);
-                if (m == null) {
-                    throw "cant parse " + util.inspect(res.message);
-                }
-                return {
-                    code: res.code,
-                    article_number: parseInt(m[1]),
-                    article_id: m[2]
-                };
-            } else {
-                return res;
+        if ([223/*, 430, 412, 423, 420*/].includes(res.code)) {
+            let m = /^([0-9]+) (<[^ ]+>)/.exec(res.message);
+            if (m == null) {
+                throw "cant parse " + util.inspect(res.message);
             }
+            return {
+                code: res.code,
+                article_number: parseInt(m[1]),
+                article_id: m[2]
+            };
         } else {
             throw res;
         }

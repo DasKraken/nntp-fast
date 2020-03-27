@@ -7,7 +7,7 @@ async function main() {
     console.log(await conn.date());
 
     await conn.group("php.general");
-    const article = await conn.article(23131) as { code: number, headers: any, body: Buffer };
+    const article = await conn.article(23131);
     console.log(article.headers);
     console.log(article.body.toString());
 
