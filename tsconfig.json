@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "lib": ["ES2017", "dom"],
+    "module": "commonjs",
+    "removeComments": false,
+    "noImplicitAny": false,
+    "strictNullChecks": true,
+    "sourceMap": false,
+    "outDir": "lib",
+    "declaration": true
+  },
+  "include": ["src"],
+  "exclude": ["src/__tests__"]
+}

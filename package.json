@@ -1,0 +1,35 @@
+{
+  "name": "nzbstream",
+  "version": "0.1.0",
+  "description": "",
+  "main": "lib/nntp.js",
+  "types": "lib/nntp.d.ts",
+  "dependencies": {
+    "finalhandler": "^1.1.2",
+    "serve-index": "^1.9.1",
+    "serve-static": "^1.14.1",
+    "streamsearch": "^0.1.2",
+    "xml2js": "^0.4.23",
+    "yencode": "^1.1.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^25.1.4",
+    "@types/node": "^12.12.31",
+    "cpy-cli": "^3.1.0",
+    "jest": "^25.2.3",
+    "rimraf": "^3.0.2",
+    "ts-jest": "^25.2.1",
+    "ts-node": "^8.7.0",
+    "tslint": "^6.1.0",
+    "typescript": "^3.8.3"
+  },
+  "scripts": {
+    "test": "jest",
+    "clean": "rimraf lib types",
+    "build": "tsc -p .",
+    "watch": "watch \"npm run build\" ./src",
+    "tslint": "tslint \"src/**/*.ts\" -t verbose"
+  },
+  "author": "",
+  "license": "ISC"
+}
