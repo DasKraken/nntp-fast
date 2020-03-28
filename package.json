@@ -1,9 +1,16 @@
 {
   "name": "nntp-fast",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "",
   "main": "lib/nntp.js",
   "types": "lib/nntp.d.ts",
+  "files": [
+    "lib"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DasKraken/nntp-fast.git"
+  },
   "dependencies": {
     "streamsearch": "^0.1.2"
   },
