@@ -18,7 +18,9 @@
     "ts-jest": "^25.2.1",
     "ts-node": "^8.7.0",
     "typedoc": "^0.17.3",
+    "typedoc-plugin-as-member-of": "^1.0.2",
     "typedoc-plugin-markdown": "^2.2.17",
+    "typedoc-plugin-no-inherit": "^1.1.10",
     "typescript": "^3.8.3"
   },
   "scripts": {
@@ -27,7 +29,7 @@
     "build": "tsc -p .",
     "watch": "watch \"npm run build\" ./src",
     "eslint": "eslint \"src/**/*.ts\"",
-    "typedoc": "npx typedoc --plugin typedoc-plugin-markdown --excludeNotExported --excludePrivate  --out docs src"
+    "typedoc": "npx typedoc --plugin typedoc-plugin-as-member-of --plugin typedoc-plugin-no-inherit --plugin typedoc-plugin-markdown --excludeNotExported --excludePrivate  --out docs src"
   },
   "author": "",
   "license": "Unlicense"

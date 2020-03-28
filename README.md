@@ -2,6 +2,8 @@ nntp-fast
 =========
 A lightweight nntp client for node made with attention to speed and ease of use. Works with promises and streams.
 
+[Documentation](./docs/classes/_nntp_.nntpconnection.md)
+
 Example
 =======
 Example that fetches an aritcle from _news.php.net_ newsserver:
@@ -70,11 +72,6 @@ Benchmark
 | [newsie](https://www.npmjs.com/package/newsie)       | ✓              | 25.53 MiB              | 28.51 MiB            |
 | [node-nntp](https://www.npmjs.com/package/node-nntp) | ✗              | 3.85 MiB               | 4.46  MiB            |
 | [entepe](https://www.npmjs.com/package/entepe)       | ✗              | 1.04 MiB               | 1.0 MiB              |
-
-
-Usage
-=====
-
 
 
 

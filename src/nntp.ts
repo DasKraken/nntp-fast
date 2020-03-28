@@ -19,22 +19,63 @@ interface ResponseHandler {
     MldbStream?: PassThrough;
 }
 
-interface BasicResponse {
+export interface BasicResponse {
+    /** Response code. See [RFC 3977 section 3.2](https://tools.ietf.org/html/rfc3977#section-3.2). */
     code: number;
+    /** Response message */
     message: string;
 }
-interface DataResponse extends BasicResponse {
+export interface DataResponse extends BasicResponse {
+    /** Content of multi line data block. */
     data?: Buffer;
 }
-interface StatResponse {
+export interface StatResponse {
+    /** Response code. See [RFC 3977 section 3.2](https://tools.ietf.org/html/rfc3977#section-3.2). */
     code: number;
+    /** Number of selected article. */
     articleNumber: number;
+    /** Message id of selected article.  */
     articleId: string;
 
 }
-type Headers = Record<string, string>;
+/** NNTP post headers */
+export type Headers = Record<string, string>;
+
+export interface NntpConnectionConstructorOptions {
+    /** Whether dot unstuffing should be performed. (Default: true) */
+    dotUnstuffing?: boolean;
+}
+
+export interface SteamResponse {
+    response: Promise<BasicResponse>;
+    stream: Readable;
+}
 
 
+/** 
+* Emitted when socket is closed.
+* @asMemberOf NntpConnection
+* @event
+*/
+export declare function end(): void;
+
+/** 
+ * Emitted when an socket or protocoll error occurs.
+ * @asMemberOf NntpConnection
+ * @event
+ */
+export declare function error(error: Error): void;
+
+/** 
+ * Emitted when socket timeouts.
+ * @asMemberOf NntpConnection
+ * @event
+ */
+export declare function timeout(): void;
+
+/**
+ * @noInheritDoc
+ */
 export class NntpConnection extends EventEmitter {
     /** @private */
     _connected: boolean;
@@ -56,11 +97,12 @@ export class NntpConnection extends EventEmitter {
     /** @private */
     _streamsearchMLDB: DotUnstuffingStreamSearch;
 
+
     /**
      * 
-     * @param options options
+     * @param options.dotUnstuffing Whether dot unstuffing should be performed.
      */
-    constructor(options?: { dotUnstuffing?: boolean }) {
+    constructor(options?: NntpConnectionConstructorOptions) {
         super();
         if (!options) options = {};
         if (options.dotUnstuffing === undefined) options.dotUnstuffing = true;
@@ -274,7 +316,7 @@ export class NntpConnection extends EventEmitter {
      * @param decideMldb optional function that decides from response code whether a 
      * multi line data block is to be expected
      */
-    runCommandStream(command: string, decideMldb?: (code: number) => boolean): { stream: Readable; response: Promise<BasicResponse> } {
+    runCommandStream(command: string, decideMldb?: (code: number) => boolean): SteamResponse {
         const stream = new PassThrough();
         const response = new Promise<BasicResponse>((resolve): void => {
             const handler: ResponseHandler = {
@@ -298,7 +340,7 @@ export class NntpConnection extends EventEmitter {
      * See [RFC 3977 Section 3.3](https://tools.ietf.org/html/rfc3977#section-3.3)
      * @param keyword 
      */
-    async capabilities(keyword?: string): Promise<{ code: number; message: string; body?: Buffer }> {
+    async capabilities(keyword?: string): Promise<DataResponse> {
         const res = await this.runCommand("CAPABILITIES" + (keyword ? " " + keyword : ""));
         if (res.code == 101) {
             return res;
@@ -495,7 +537,7 @@ export class NntpConnection extends EventEmitter {
      * presents the body to the client. Body is given as stream.
      * @param messageid 
      */
-    bodyStream(messageid?: string | number): { stream: Readable; response: Promise<BasicResponse> } {
+    bodyStream(messageid?: string | number): SteamResponse {
         return this.runCommandStream("BODY" + (messageid ? " " + messageid : ""));
 
     }

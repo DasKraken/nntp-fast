@@ -14,108 +14,104 @@
 
 * [constructor](_nntp_.nntpconnection.md#constructor)
 
-### Properties
+### Events
 
-* [defaultMaxListeners](_nntp_.nntpconnection.md#static-defaultmaxlisteners)
+* [end](_nntp_.nntpconnection.md#end)
+* [error](_nntp_.nntpconnection.md#error)
+* [timeout](_nntp_.nntpconnection.md#timeout)
 
 ### Methods
 
-* [addListener](_nntp_.nntpconnection.md#addlistener)
 * [article](_nntp_.nntpconnection.md#article)
 * [body](_nntp_.nntpconnection.md#body)
 * [bodyStream](_nntp_.nntpconnection.md#bodystream)
 * [capabilities](_nntp_.nntpconnection.md#capabilities)
 * [connect](_nntp_.nntpconnection.md#connect)
 * [date](_nntp_.nntpconnection.md#date)
-* [emit](_nntp_.nntpconnection.md#emit)
-* [eventNames](_nntp_.nntpconnection.md#eventnames)
-* [getMaxListeners](_nntp_.nntpconnection.md#getmaxlisteners)
 * [group](_nntp_.nntpconnection.md#group)
 * [head](_nntp_.nntpconnection.md#head)
 * [help](_nntp_.nntpconnection.md#help)
 * [last](_nntp_.nntpconnection.md#last)
-* [listenerCount](_nntp_.nntpconnection.md#listenercount)
-* [listeners](_nntp_.nntpconnection.md#listeners)
 * [listgroup](_nntp_.nntpconnection.md#listgroup)
 * [modeReader](_nntp_.nntpconnection.md#modereader)
 * [newsgroups](_nntp_.nntpconnection.md#newsgroups)
 * [next](_nntp_.nntpconnection.md#next)
-* [off](_nntp_.nntpconnection.md#off)
-* [on](_nntp_.nntpconnection.md#on)
-* [once](_nntp_.nntpconnection.md#once)
-* [prependListener](_nntp_.nntpconnection.md#prependlistener)
-* [prependOnceListener](_nntp_.nntpconnection.md#prependoncelistener)
 * [quit](_nntp_.nntpconnection.md#quit)
-* [rawListeners](_nntp_.nntpconnection.md#rawlisteners)
-* [removeAllListeners](_nntp_.nntpconnection.md#removealllisteners)
-* [removeListener](_nntp_.nntpconnection.md#removelistener)
 * [runCommand](_nntp_.nntpconnection.md#runcommand)
 * [runCommandStream](_nntp_.nntpconnection.md#runcommandstream)
-* [setMaxListeners](_nntp_.nntpconnection.md#setmaxlisteners)
 * [stat](_nntp_.nntpconnection.md#stat)
-* [listenerCount](_nntp_.nntpconnection.md#static-listenercount)
 
 ## Constructors
 
 ###  constructor
 
-\+ **new NntpConnection**(`options?`: undefined | object): *[NntpConnection](_nntp_.nntpconnection.md)*
+\+ **new NntpConnection**(`options?`: [NntpConnectionConstructorOptions](../interfaces/_nntp_.nntpconnectionconstructoroptions.md)): *[NntpConnection](_nntp_.nntpconnection.md)*
 
-*Defined in [src/nntp.ts:57](https://github.com/DasKraken/nntp-fast/blob/31910d4/src/nntp.ts#L57)*
-
-**Parameters:**
-
-Name | Type | Description |
------- | ------ | ------ |
-`options?` | undefined &#124; object | options  |
-
-**Returns:** *[NntpConnection](_nntp_.nntpconnection.md)*
-
-## Properties
-
-### `Static` defaultMaxListeners
-
-▪ **defaultMaxListeners**: *number*
-
-*Inherited from [DotUnstuffingStream](_dotunstuffingstream_.dotunstuffingstream.md).[defaultMaxListeners](_dotunstuffingstream_.dotunstuffingstream.md#static-defaultmaxlisteners)*
-
-Defined in node_modules/@types/node/events.d.ts:18
-
-## Methods
-
-###  addListener
-
-▸ **addListener**(`event`: string | symbol, `listener`: function): *this*
-
-*Inherited from [DotUnstuffingStreamSearch](_dotunstuffingstreamsearch_.dotunstuffingstreamsearch.md).[addListener](_dotunstuffingstreamsearch_.dotunstuffingstreamsearch.md#addlistener)*
-
-*Overrides void*
-
-Defined in node_modules/@types/node/events.d.ts:20
-
-**Parameters:**
-
-▪ **event**: *string | symbol*
-
-▪ **listener**: *function*
-
-▸ (...`args`: any[]): *void*
+*Defined in [src/nntp.ts:98](https://github.com/DasKraken/nntp-fast/blob/fe1dce3/src/nntp.ts#L98)*
 
 **Parameters:**
 
 Name | Type |
 ------ | ------ |
-`...args` | any[] |
+`options?` | [NntpConnectionConstructorOptions](../interfaces/_nntp_.nntpconnectionconstructoroptions.md) |
 
-**Returns:** *this*
+**Returns:** *[NntpConnection](_nntp_.nntpconnection.md)*
+
+## Events
+
+###  end
+
+• **end**(): *void*
+
+*Defined in [src/nntp.ts:60](https://github.com/DasKraken/nntp-fast/blob/fe1dce3/src/nntp.ts#L60)*
+
+Emitted when socket is closed.
+
+**`asmemberof`** NntpConnection
+
+**Returns:** *void*
 
 ___
+
+###  error
+
+• **error**(`error`: Error): *void*
+
+*Defined in [src/nntp.ts:67](https://github.com/DasKraken/nntp-fast/blob/fe1dce3/src/nntp.ts#L67)*
+
+Emitted when an socket or protocoll error occurs.
+
+**`asmemberof`** NntpConnection
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`error` | Error |
+
+**Returns:** *void*
+
+___
+
+###  timeout
+
+• **timeout**(): *void*
+
+*Defined in [src/nntp.ts:74](https://github.com/DasKraken/nntp-fast/blob/fe1dce3/src/nntp.ts#L74)*
+
+Emitted when socket timeouts.
+
+**`asmemberof`** NntpConnection
+
+**Returns:** *void*
+
+## Methods
 
 ###  article
 
 ▸ **article**(`messageid?`: string | number): *Promise‹object›*
 
-*Defined in [src/nntp.ts:435](https://github.com/DasKraken/nntp-fast/blob/31910d4/src/nntp.ts#L435)*
+*Defined in [src/nntp.ts:477](https://github.com/DasKraken/nntp-fast/blob/fe1dce3/src/nntp.ts#L477)*
 
 The ARTICLE command selects an article according to the arguments and
 presents the entire article (that is, the headers, and the body) to
@@ -135,7 +131,7 @@ ___
 
 ▸ **body**(`messageid?`: string | number): *Promise‹object›*
 
-*Defined in [src/nntp.ts:479](https://github.com/DasKraken/nntp-fast/blob/31910d4/src/nntp.ts#L479)*
+*Defined in [src/nntp.ts:521](https://github.com/DasKraken/nntp-fast/blob/fe1dce3/src/nntp.ts#L521)*
 
 The BODY command selects an article according to the arguments and
 presents the body to the client.
@@ -152,9 +148,9 @@ ___
 
 ###  bodyStream
 
-▸ **bodyStream**(`messageid?`: string | number): *object*
+▸ **bodyStream**(`messageid?`: string | number): *[SteamResponse](../interfaces/_nntp_.steamresponse.md)*
 
-*Defined in [src/nntp.ts:498](https://github.com/DasKraken/nntp-fast/blob/31910d4/src/nntp.ts#L498)*
+*Defined in [src/nntp.ts:540](https://github.com/DasKraken/nntp-fast/blob/fe1dce3/src/nntp.ts#L540)*
 
 The BODY command selects an article according to the arguments and
 presents the body to the client. Body is given as stream.
@@ -165,19 +161,15 @@ Name | Type | Description |
 ------ | ------ | ------ |
 `messageid?` | string &#124; number |   |
 
-**Returns:** *object*
-
-* **response**: *Promise‹BasicResponse›*
-
-* **stream**: *Readable*
+**Returns:** *[SteamResponse](../interfaces/_nntp_.steamresponse.md)*
 
 ___
 
 ###  capabilities
 
-▸ **capabilities**(`keyword?`: undefined | string): *Promise‹object›*
+▸ **capabilities**(`keyword?`: undefined | string): *Promise‹[DataResponse](../interfaces/_nntp_.dataresponse.md)›*
 
-*Defined in [src/nntp.ts:301](https://github.com/DasKraken/nntp-fast/blob/31910d4/src/nntp.ts#L301)*
+*Defined in [src/nntp.ts:343](https://github.com/DasKraken/nntp-fast/blob/fe1dce3/src/nntp.ts#L343)*
 
 The CAPABILITIES command allows a client to determine the
 capabilities of the server at any given time.
@@ -190,15 +182,15 @@ Name | Type | Description |
 ------ | ------ | ------ |
 `keyword?` | undefined &#124; string |   |
 
-**Returns:** *Promise‹object›*
+**Returns:** *Promise‹[DataResponse](../interfaces/_nntp_.dataresponse.md)›*
 
 ___
 
 ###  connect
 
-▸ **connect**(`host`: string, `port`: number): *Promise‹BasicResponse›*
+▸ **connect**(`host`: string, `port`: number): *Promise‹[BasicResponse](../interfaces/_nntp_.basicresponse.md)›*
 
-*Defined in [src/nntp.ts:84](https://github.com/DasKraken/nntp-fast/blob/31910d4/src/nntp.ts#L84)*
+*Defined in [src/nntp.ts:126](https://github.com/DasKraken/nntp-fast/blob/fe1dce3/src/nntp.ts#L126)*
 
 Connect to nntp server
 
@@ -209,7 +201,7 @@ Name | Type | Description |
 `host` | string | - |
 `port` | number |   |
 
-**Returns:** *Promise‹BasicResponse›*
+**Returns:** *Promise‹[BasicResponse](../interfaces/_nntp_.basicresponse.md)›*
 
 ___
 
@@ -217,7 +209,7 @@ ___
 
 ▸ **date**(): *Promise‹object›*
 
-*Defined in [src/nntp.ts:541](https://github.com/DasKraken/nntp-fast/blob/31910d4/src/nntp.ts#L541)*
+*Defined in [src/nntp.ts:583](https://github.com/DasKraken/nntp-fast/blob/fe1dce3/src/nntp.ts#L583)*
 
 This command exists to help clients find out the current Coordinated
 Universal Time from the server's perspective.
@@ -226,60 +218,11 @@ Universal Time from the server's perspective.
 
 ___
 
-###  emit
-
-▸ **emit**(`event`: string | symbol, ...`args`: any[]): *boolean*
-
-*Inherited from [DotUnstuffingStreamSearch](_dotunstuffingstreamsearch_.dotunstuffingstreamsearch.md).[emit](_dotunstuffingstreamsearch_.dotunstuffingstreamsearch.md#emit)*
-
-*Overrides void*
-
-Defined in node_modules/@types/node/events.d.ts:32
-
-**Parameters:**
-
-Name | Type |
------- | ------ |
-`event` | string &#124; symbol |
-`...args` | any[] |
-
-**Returns:** *boolean*
-
-___
-
-###  eventNames
-
-▸ **eventNames**(): *Array‹string | symbol›*
-
-*Inherited from [DotUnstuffingStream](_dotunstuffingstream_.dotunstuffingstream.md).[eventNames](_dotunstuffingstream_.dotunstuffingstream.md#eventnames)*
-
-*Overrides void*
-
-Defined in node_modules/@types/node/events.d.ts:33
-
-**Returns:** *Array‹string | symbol›*
-
-___
-
-###  getMaxListeners
-
-▸ **getMaxListeners**(): *number*
-
-*Inherited from [DotUnstuffingStream](_dotunstuffingstream_.dotunstuffingstream.md).[getMaxListeners](_dotunstuffingstream_.dotunstuffingstream.md#getmaxlisteners)*
-
-*Overrides void*
-
-Defined in node_modules/@types/node/events.d.ts:29
-
-**Returns:** *number*
-
-___
-
 ###  group
 
 ▸ **group**(`group`: string): *Promise‹object›*
 
-*Defined in [src/nntp.ts:340](https://github.com/DasKraken/nntp-fast/blob/31910d4/src/nntp.ts#L340)*
+*Defined in [src/nntp.ts:382](https://github.com/DasKraken/nntp-fast/blob/fe1dce3/src/nntp.ts#L382)*
 
 The GROUP command selects a newsgroup as the currently selected
 newsgroup and returns summary information about it.
@@ -298,7 +241,7 @@ ___
 
 ▸ **head**(`messageid?`: string | number): *Promise‹object›*
 
-*Defined in [src/nntp.ts:458](https://github.com/DasKraken/nntp-fast/blob/31910d4/src/nntp.ts#L458)*
+*Defined in [src/nntp.ts:500](https://github.com/DasKraken/nntp-fast/blob/fe1dce3/src/nntp.ts#L500)*
 
 The HEAD command selects an article according to the arguments and
 presents the headers to the client.
@@ -315,67 +258,27 @@ ___
 
 ###  help
 
-▸ **help**(): *Promise‹BasicResponse›*
+▸ **help**(): *Promise‹[BasicResponse](../interfaces/_nntp_.basicresponse.md)›*
 
-*Defined in [src/nntp.ts:559](https://github.com/DasKraken/nntp-fast/blob/31910d4/src/nntp.ts#L559)*
+*Defined in [src/nntp.ts:601](https://github.com/DasKraken/nntp-fast/blob/fe1dce3/src/nntp.ts#L601)*
 
 This command provides a short summary of the commands that are
 understood by this implementation of the server.
 
-**Returns:** *Promise‹BasicResponse›*
+**Returns:** *Promise‹[BasicResponse](../interfaces/_nntp_.basicresponse.md)›*
 
 ___
 
 ###  last
 
-▸ **last**(): *Promise‹StatResponse›*
+▸ **last**(): *Promise‹[StatResponse](../interfaces/_nntp_.statresponse.md)›*
 
-*Defined in [src/nntp.ts:389](https://github.com/DasKraken/nntp-fast/blob/31910d4/src/nntp.ts#L389)*
+*Defined in [src/nntp.ts:431](https://github.com/DasKraken/nntp-fast/blob/fe1dce3/src/nntp.ts#L431)*
 
 The current article number will be set to the previous article in
 that newsgroup
 
-**Returns:** *Promise‹StatResponse›*
-
-___
-
-###  listenerCount
-
-▸ **listenerCount**(`type`: string | symbol): *number*
-
-*Inherited from [DotUnstuffingStream](_dotunstuffingstream_.dotunstuffingstream.md).[listenerCount](_dotunstuffingstream_.dotunstuffingstream.md#static-listenercount)*
-
-*Overrides void*
-
-Defined in node_modules/@types/node/events.d.ts:34
-
-**Parameters:**
-
-Name | Type |
------- | ------ |
-`type` | string &#124; symbol |
-
-**Returns:** *number*
-
-___
-
-###  listeners
-
-▸ **listeners**(`event`: string | symbol): *Function[]*
-
-*Inherited from [DotUnstuffingStream](_dotunstuffingstream_.dotunstuffingstream.md).[listeners](_dotunstuffingstream_.dotunstuffingstream.md#listeners)*
-
-*Overrides void*
-
-Defined in node_modules/@types/node/events.d.ts:30
-
-**Parameters:**
-
-Name | Type |
------- | ------ |
-`event` | string &#124; symbol |
-
-**Returns:** *Function[]*
+**Returns:** *Promise‹[StatResponse](../interfaces/_nntp_.statresponse.md)›*
 
 ___
 
@@ -383,7 +286,7 @@ ___
 
 ▸ **listgroup**(`group?`: undefined | string, `range?`: undefined | string): *Promise‹object›*
 
-*Defined in [src/nntp.ts:369](https://github.com/DasKraken/nntp-fast/blob/31910d4/src/nntp.ts#L369)*
+*Defined in [src/nntp.ts:411](https://github.com/DasKraken/nntp-fast/blob/fe1dce3/src/nntp.ts#L411)*
 
 The LISTGROUP command selects a newsgroup in the same manner as the
 GROUP command but also provides a list of article
@@ -403,22 +306,22 @@ ___
 
 ###  modeReader
 
-▸ **modeReader**(): *Promise‹BasicResponse›*
+▸ **modeReader**(): *Promise‹[BasicResponse](../interfaces/_nntp_.basicresponse.md)›*
 
-*Defined in [src/nntp.ts:314](https://github.com/DasKraken/nntp-fast/blob/31910d4/src/nntp.ts#L314)*
+*Defined in [src/nntp.ts:356](https://github.com/DasKraken/nntp-fast/blob/fe1dce3/src/nntp.ts#L356)*
 
 The MODE READER command instructs a mode-switching server to switch
 modes, as described in [RFC 3977 Section 3.4.2](https://tools.ietf.org/html/rfc3977#section-3.4.2).
 
-**Returns:** *Promise‹BasicResponse›*
+**Returns:** *Promise‹[BasicResponse](../interfaces/_nntp_.basicresponse.md)›*
 
 ___
 
 ###  newsgroups
 
-▸ **newsgroups**(`date`: Date): *Promise‹DataResponse›*
+▸ **newsgroups**(`date`: Date): *Promise‹[DataResponse](../interfaces/_nntp_.dataresponse.md)›*
 
-*Defined in [src/nntp.ts:574](https://github.com/DasKraken/nntp-fast/blob/31910d4/src/nntp.ts#L574)*
+*Defined in [src/nntp.ts:616](https://github.com/DasKraken/nntp-fast/blob/fe1dce3/src/nntp.ts#L616)*
 
 This command returns a list of newsgroups created on the server since
 the specified date and time.
@@ -429,11 +332,11 @@ Name | Type | Description |
 ------ | ------ | ------ |
 `date` | Date |   |
 
-**Returns:** *Promise‹DataResponse›*
+**Returns:** *Promise‹[DataResponse](../interfaces/_nntp_.dataresponse.md)›*
 
-▸ **newsgroups**(`date`: string, `time`: string, `gmt?`: undefined | false | true): *Promise‹DataResponse›*
+▸ **newsgroups**(`date`: string, `time`: string, `gmt?`: undefined | false | true): *Promise‹[DataResponse](../interfaces/_nntp_.dataresponse.md)›*
 
-*Defined in [src/nntp.ts:575](https://github.com/DasKraken/nntp-fast/blob/31910d4/src/nntp.ts#L575)*
+*Defined in [src/nntp.ts:617](https://github.com/DasKraken/nntp-fast/blob/fe1dce3/src/nntp.ts#L617)*
 
 **Parameters:**
 
@@ -443,248 +346,40 @@ Name | Type |
 `time` | string |
 `gmt?` | undefined &#124; false &#124; true |
 
-**Returns:** *Promise‹DataResponse›*
+**Returns:** *Promise‹[DataResponse](../interfaces/_nntp_.dataresponse.md)›*
 
 ___
 
 ###  next
 
-▸ **next**(): *Promise‹StatResponse›*
+▸ **next**(): *Promise‹[StatResponse](../interfaces/_nntp_.statresponse.md)›*
 
-*Defined in [src/nntp.ts:411](https://github.com/DasKraken/nntp-fast/blob/31910d4/src/nntp.ts#L411)*
+*Defined in [src/nntp.ts:453](https://github.com/DasKraken/nntp-fast/blob/fe1dce3/src/nntp.ts#L453)*
 
 The current article number will be set to the next article in
 that newsgroup
 
-**Returns:** *Promise‹StatResponse›*
-
-___
-
-###  off
-
-▸ **off**(`event`: string | symbol, `listener`: function): *this*
-
-*Inherited from [DotUnstuffingStream](_dotunstuffingstream_.dotunstuffingstream.md).[off](_dotunstuffingstream_.dotunstuffingstream.md#off)*
-
-*Overrides void*
-
-Defined in node_modules/@types/node/events.d.ts:26
-
-**Parameters:**
-
-▪ **event**: *string | symbol*
-
-▪ **listener**: *function*
-
-▸ (...`args`: any[]): *void*
-
-**Parameters:**
-
-Name | Type |
------- | ------ |
-`...args` | any[] |
-
-**Returns:** *this*
-
-___
-
-###  on
-
-▸ **on**(`event`: string | symbol, `listener`: function): *this*
-
-*Inherited from [DotUnstuffingStreamSearch](_dotunstuffingstreamsearch_.dotunstuffingstreamsearch.md).[on](_dotunstuffingstreamsearch_.dotunstuffingstreamsearch.md#on)*
-
-*Overrides void*
-
-Defined in node_modules/@types/node/events.d.ts:21
-
-**Parameters:**
-
-▪ **event**: *string | symbol*
-
-▪ **listener**: *function*
-
-▸ (...`args`: any[]): *void*
-
-**Parameters:**
-
-Name | Type |
------- | ------ |
-`...args` | any[] |
-
-**Returns:** *this*
-
-___
-
-###  once
-
-▸ **once**(`event`: string | symbol, `listener`: function): *this*
-
-*Inherited from [DotUnstuffingStreamSearch](_dotunstuffingstreamsearch_.dotunstuffingstreamsearch.md).[once](_dotunstuffingstreamsearch_.dotunstuffingstreamsearch.md#once)*
-
-*Overrides void*
-
-Defined in node_modules/@types/node/events.d.ts:22
-
-**Parameters:**
-
-▪ **event**: *string | symbol*
-
-▪ **listener**: *function*
-
-▸ (...`args`: any[]): *void*
-
-**Parameters:**
-
-Name | Type |
------- | ------ |
-`...args` | any[] |
-
-**Returns:** *this*
-
-___
-
-###  prependListener
-
-▸ **prependListener**(`event`: string | symbol, `listener`: function): *this*
-
-*Inherited from [DotUnstuffingStreamSearch](_dotunstuffingstreamsearch_.dotunstuffingstreamsearch.md).[prependListener](_dotunstuffingstreamsearch_.dotunstuffingstreamsearch.md#prependlistener)*
-
-*Overrides void*
-
-Defined in node_modules/@types/node/events.d.ts:23
-
-**Parameters:**
-
-▪ **event**: *string | symbol*
-
-▪ **listener**: *function*
-
-▸ (...`args`: any[]): *void*
-
-**Parameters:**
-
-Name | Type |
------- | ------ |
-`...args` | any[] |
-
-**Returns:** *this*
-
-___
-
-###  prependOnceListener
-
-▸ **prependOnceListener**(`event`: string | symbol, `listener`: function): *this*
-
-*Inherited from [DotUnstuffingStreamSearch](_dotunstuffingstreamsearch_.dotunstuffingstreamsearch.md).[prependOnceListener](_dotunstuffingstreamsearch_.dotunstuffingstreamsearch.md#prependoncelistener)*
-
-*Overrides void*
-
-Defined in node_modules/@types/node/events.d.ts:24
-
-**Parameters:**
-
-▪ **event**: *string | symbol*
-
-▪ **listener**: *function*
-
-▸ (...`args`: any[]): *void*
-
-**Parameters:**
-
-Name | Type |
------- | ------ |
-`...args` | any[] |
-
-**Returns:** *this*
+**Returns:** *Promise‹[StatResponse](../interfaces/_nntp_.statresponse.md)›*
 
 ___
 
 ###  quit
 
-▸ **quit**(): *Promise‹BasicResponse›*
+▸ **quit**(): *Promise‹[BasicResponse](../interfaces/_nntp_.basicresponse.md)›*
 
-*Defined in [src/nntp.ts:326](https://github.com/DasKraken/nntp-fast/blob/31910d4/src/nntp.ts#L326)*
+*Defined in [src/nntp.ts:368](https://github.com/DasKraken/nntp-fast/blob/fe1dce3/src/nntp.ts#L368)*
 
 The client uses the QUIT command to terminate the session.
 
-**Returns:** *Promise‹BasicResponse›*
-
-___
-
-###  rawListeners
-
-▸ **rawListeners**(`event`: string | symbol): *Function[]*
-
-*Inherited from [DotUnstuffingStream](_dotunstuffingstream_.dotunstuffingstream.md).[rawListeners](_dotunstuffingstream_.dotunstuffingstream.md#rawlisteners)*
-
-*Overrides void*
-
-Defined in node_modules/@types/node/events.d.ts:31
-
-**Parameters:**
-
-Name | Type |
------- | ------ |
-`event` | string &#124; symbol |
-
-**Returns:** *Function[]*
-
-___
-
-###  removeAllListeners
-
-▸ **removeAllListeners**(`event?`: string | symbol): *this*
-
-*Inherited from [DotUnstuffingStream](_dotunstuffingstream_.dotunstuffingstream.md).[removeAllListeners](_dotunstuffingstream_.dotunstuffingstream.md#removealllisteners)*
-
-*Overrides void*
-
-Defined in node_modules/@types/node/events.d.ts:27
-
-**Parameters:**
-
-Name | Type |
------- | ------ |
-`event?` | string &#124; symbol |
-
-**Returns:** *this*
-
-___
-
-###  removeListener
-
-▸ **removeListener**(`event`: string | symbol, `listener`: function): *this*
-
-*Inherited from [DotUnstuffingStreamSearch](_dotunstuffingstreamsearch_.dotunstuffingstreamsearch.md).[removeListener](_dotunstuffingstreamsearch_.dotunstuffingstreamsearch.md#removelistener)*
-
-*Overrides void*
-
-Defined in node_modules/@types/node/events.d.ts:25
-
-**Parameters:**
-
-▪ **event**: *string | symbol*
-
-▪ **listener**: *function*
-
-▸ (...`args`: any[]): *void*
-
-**Parameters:**
-
-Name | Type |
------- | ------ |
-`...args` | any[] |
-
-**Returns:** *this*
+**Returns:** *Promise‹[BasicResponse](../interfaces/_nntp_.basicresponse.md)›*
 
 ___
 
 ###  runCommand
 
-▸ **runCommand**(`command`: string, `decideMldb?`: undefined | function): *Promise‹DataResponse›*
+▸ **runCommand**(`command`: string, `decideMldb?`: undefined | function): *Promise‹[DataResponse](../interfaces/_nntp_.dataresponse.md)›*
 
-*Defined in [src/nntp.ts:258](https://github.com/DasKraken/nntp-fast/blob/31910d4/src/nntp.ts#L258)*
+*Defined in [src/nntp.ts:300](https://github.com/DasKraken/nntp-fast/blob/fe1dce3/src/nntp.ts#L300)*
 
 Sends command to server.
 
@@ -695,15 +390,15 @@ Name | Type | Description |
 `command` | string | command to execute |
 `decideMldb?` | undefined &#124; function | optional function that decides from response code whether a multi line data block is to be expected  |
 
-**Returns:** *Promise‹DataResponse›*
+**Returns:** *Promise‹[DataResponse](../interfaces/_nntp_.dataresponse.md)›*
 
 ___
 
 ###  runCommandStream
 
-▸ **runCommandStream**(`command`: string, `decideMldb?`: undefined | function): *object*
+▸ **runCommandStream**(`command`: string, `decideMldb?`: undefined | function): *[SteamResponse](../interfaces/_nntp_.steamresponse.md)*
 
-*Defined in [src/nntp.ts:277](https://github.com/DasKraken/nntp-fast/blob/31910d4/src/nntp.ts#L277)*
+*Defined in [src/nntp.ts:319](https://github.com/DasKraken/nntp-fast/blob/fe1dce3/src/nntp.ts#L319)*
 
 Sends command to server. Creates a stream for the multi line data block.
 
@@ -714,39 +409,15 @@ Name | Type | Description |
 `command` | string | command to execute |
 `decideMldb?` | undefined &#124; function | optional function that decides from response code whether a multi line data block is to be expected  |
 
-**Returns:** *object*
-
-* **response**: *Promise‹BasicResponse›*
-
-* **stream**: *Readable*
-
-___
-
-###  setMaxListeners
-
-▸ **setMaxListeners**(`n`: number): *this*
-
-*Inherited from [DotUnstuffingStream](_dotunstuffingstream_.dotunstuffingstream.md).[setMaxListeners](_dotunstuffingstream_.dotunstuffingstream.md#setmaxlisteners)*
-
-*Overrides void*
-
-Defined in node_modules/@types/node/events.d.ts:28
-
-**Parameters:**
-
-Name | Type |
------- | ------ |
-`n` | number |
-
-**Returns:** *this*
+**Returns:** *[SteamResponse](../interfaces/_nntp_.steamresponse.md)*
 
 ___
 
 ###  stat
 
-▸ **stat**(`messageid?`: string | number): *Promise‹StatResponse›*
+▸ **stat**(`messageid?`: string | number): *Promise‹[StatResponse](../interfaces/_nntp_.statresponse.md)›*
 
-*Defined in [src/nntp.ts:511](https://github.com/DasKraken/nntp-fast/blob/31910d4/src/nntp.ts#L511)*
+*Defined in [src/nntp.ts:553](https://github.com/DasKraken/nntp-fast/blob/fe1dce3/src/nntp.ts#L553)*
 
 The STAT command selects an article according to the arguments.
 This command allows the client to determine whether an article exists
@@ -759,25 +430,4 @@ Name | Type | Description |
 ------ | ------ | ------ |
 `messageid?` | string &#124; number |   |
 
-**Returns:** *Promise‹StatResponse›*
-
-___
-
-### `Static` listenerCount
-
-▸ **listenerCount**(`emitter`: EventEmitter, `event`: string | symbol): *number*
-
-*Inherited from [DotUnstuffingStream](_dotunstuffingstream_.dotunstuffingstream.md).[listenerCount](_dotunstuffingstream_.dotunstuffingstream.md#static-listenercount)*
-
-Defined in node_modules/@types/node/events.d.ts:17
-
-**`deprecated`** since v4.0.0
-
-**Parameters:**
-
-Name | Type |
------- | ------ |
-`emitter` | EventEmitter |
-`event` | string &#124; symbol |
-
-**Returns:** *number*
+**Returns:** *Promise‹[StatResponse](../interfaces/_nntp_.statresponse.md)›*

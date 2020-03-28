@@ -16,6 +16,21 @@ const CR = "\r".charCodeAt(0);
 const LF = "\n".charCodeAt(0);
 const DOT = ".".charCodeAt(0);
 
+/** 
+ * A match may or may not have been made. In either case, a preceding chunk of data may be 
+ * available that did not match the needle. Data (if available) is in `chunk` between `start` 
+ * (inclusive) and `end` (exclusive).
+ * 
+ * @param isMatch Whether a match had been made (after the chunk)
+ * @param chunk Buffer of data
+ * @param start Start position of data in chunk (inclusive)
+ * @param end Start position of data in chunk (exclusive)
+ * 
+ * @asMemberOf DotUnstuffingStreamSearch
+ * @event
+ */
+export declare function info(isMatch: boolean, chunk: Buffer, start: number, end: number): void;
+
 /**
  * Searches for needle in stream while also dot-unstuffing.
  */
