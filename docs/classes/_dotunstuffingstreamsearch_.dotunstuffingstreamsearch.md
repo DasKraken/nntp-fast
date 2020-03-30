@@ -56,7 +56,7 @@ Searches for needle in stream while also dot-unstuffing.
 
 \+ **new DotUnstuffingStreamSearch**(`needle`: Buffer): *[DotUnstuffingStreamSearch](_dotunstuffingstreamsearch_.dotunstuffingstreamsearch.md)*
 
-*Defined in [src/DotUnstuffingStreamSearch.ts:42](https://github.com/DasKraken/nntp-fast/blob/fe1dce3/src/DotUnstuffingStreamSearch.ts#L42)*
+*Defined in [src/DotUnstuffingStreamSearch.ts:42](https://github.com/DasKraken/nntp-fast/blob/08294ae/src/DotUnstuffingStreamSearch.ts#L42)*
 
 **Parameters:**
 
@@ -72,7 +72,7 @@ Name | Type | Description |
 
 • **info**(`isMatch`: boolean, `chunk`: Buffer, `start`: number, `end`: number): *void*
 
-*Defined in [src/DotUnstuffingStreamSearch.ts:32](https://github.com/DasKraken/nntp-fast/blob/fe1dce3/src/DotUnstuffingStreamSearch.ts#L32)*
+*Defined in [src/DotUnstuffingStreamSearch.ts:32](https://github.com/DasKraken/nntp-fast/blob/08294ae/src/DotUnstuffingStreamSearch.ts#L32)*
 
 A match may or may not have been made. In either case, a preceding chunk of data may be
 available that did not match the needle. Data (if available) is in `chunk` between `start`
@@ -97,7 +97,7 @@ Name | Type | Description |
 
 • **_bufpos**: *number*
 
-*Defined in [src/DotUnstuffingStreamSearch.ts:38](https://github.com/DasKraken/nntp-fast/blob/fe1dce3/src/DotUnstuffingStreamSearch.ts#L38)*
+*Defined in [src/DotUnstuffingStreamSearch.ts:38](https://github.com/DasKraken/nntp-fast/blob/08294ae/src/DotUnstuffingStreamSearch.ts#L38)*
 
 ___
 
@@ -105,7 +105,7 @@ ___
 
 • **_needle**: *Delimiter*
 
-*Defined in [src/DotUnstuffingStreamSearch.ts:39](https://github.com/DasKraken/nntp-fast/blob/fe1dce3/src/DotUnstuffingStreamSearch.ts#L39)*
+*Defined in [src/DotUnstuffingStreamSearch.ts:39](https://github.com/DasKraken/nntp-fast/blob/08294ae/src/DotUnstuffingStreamSearch.ts#L39)*
 
 ___
 
@@ -113,7 +113,7 @@ ___
 
 • **_searchState**: *DelimiterSearchState*
 
-*Defined in [src/DotUnstuffingStreamSearch.ts:40](https://github.com/DasKraken/nntp-fast/blob/fe1dce3/src/DotUnstuffingStreamSearch.ts#L40)*
+*Defined in [src/DotUnstuffingStreamSearch.ts:40](https://github.com/DasKraken/nntp-fast/blob/08294ae/src/DotUnstuffingStreamSearch.ts#L40)*
 
 ___
 
@@ -121,7 +121,7 @@ ___
 
 • **matches**: *number*
 
-*Defined in [src/DotUnstuffingStreamSearch.ts:41](https://github.com/DasKraken/nntp-fast/blob/fe1dce3/src/DotUnstuffingStreamSearch.ts#L41)*
+*Defined in [src/DotUnstuffingStreamSearch.ts:41](https://github.com/DasKraken/nntp-fast/blob/08294ae/src/DotUnstuffingStreamSearch.ts#L41)*
 
 ___
 
@@ -129,7 +129,7 @@ ___
 
 • **maxMatches**: *number*
 
-*Defined in [src/DotUnstuffingStreamSearch.ts:42](https://github.com/DasKraken/nntp-fast/blob/fe1dce3/src/DotUnstuffingStreamSearch.ts#L42)*
+*Defined in [src/DotUnstuffingStreamSearch.ts:42](https://github.com/DasKraken/nntp-fast/blob/08294ae/src/DotUnstuffingStreamSearch.ts#L42)*
 
 ___
 
@@ -404,7 +404,7 @@ ___
 
 ▸ **push**(`chunk`: Buffer, `pos?`: undefined | number): *number*
 
-*Defined in [src/DotUnstuffingStreamSearch.ts:75](https://github.com/DasKraken/nntp-fast/blob/fe1dce3/src/DotUnstuffingStreamSearch.ts#L75)*
+*Defined in [src/DotUnstuffingStreamSearch.ts:75](https://github.com/DasKraken/nntp-fast/blob/08294ae/src/DotUnstuffingStreamSearch.ts#L75)*
 
 Processes `chunk`.
 
@@ -495,7 +495,7 @@ ___
 
 ▸ **reset**(): *void*
 
-*Defined in [src/DotUnstuffingStreamSearch.ts:61](https://github.com/DasKraken/nntp-fast/blob/fe1dce3/src/DotUnstuffingStreamSearch.ts#L61)*
+*Defined in [src/DotUnstuffingStreamSearch.ts:61](https://github.com/DasKraken/nntp-fast/blob/08294ae/src/DotUnstuffingStreamSearch.ts#L61)*
 
 Resets internal state
 

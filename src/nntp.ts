@@ -1,4 +1,5 @@
 import * as net from "net";
+import * as tls from "tls";
 import { PassThrough, Readable } from "stream";
 import * as util from "util";
 import * as StreamSearch from "streamsearch";
@@ -118,15 +119,41 @@ export class NntpConnection extends EventEmitter {
         this._streamsearchCRLF.on("info", this._onInfoCRLF.bind(this));
         this._streamsearchMLDB.on("info", this._onInfoMLDB.bind(this));
     }
+
+
+    /**
+     * Connect to nntp server
+     * @param options See [TCP options](https://nodejs.org/api/net.html#net_socket_connect_options_connectlistener) or [TLS options](https://nodejs.org/api/tls.html#tls_tls_connect_options_callback).
+     * @param secure Whether to use a secure connection
+     */
+    connect(options: tls.ConnectionOptions | net.NetConnectOpts, secure?: boolean): Promise<BasicResponse>;
+
     /**
      * Connect to nntp server
      * @param host
      * @param port
+     * @param secure Wheter to use a secure connection
      */
-    connect(host: string, port: number): Promise<BasicResponse> {
+    connect(host: string, port: number, secure?: boolean): Promise<BasicResponse>;
+
+    connect(hostOrOptions: string | tls.ConnectionOptions | net.NetConnectOpts, portOrSecure?: number | boolean, secure?: boolean): Promise<BasicResponse> {
         if (this._connected) {
             return Promise.resolve(this._connectedResponse);
         }
+        let options: tls.ConnectionOptions | net.NetConnectOpts;
+        if (typeof hostOrOptions === "string" && typeof portOrSecure === "number") {
+            options = {
+                host: hostOrOptions,
+                port: portOrSecure
+            }
+        } else if (typeof hostOrOptions == "object" && (typeof portOrSecure == "boolean" || portOrSecure == undefined)) {
+            options = hostOrOptions;
+            secure = portOrSecure
+        } else {
+            throw new TypeError();
+        }
+
+
         return new Promise((resolve, reject) => {
 
             // Initial Handler
@@ -139,10 +166,18 @@ export class NntpConnection extends EventEmitter {
             }
             this._responseQueue = [handler];
 
-            this._socket = net.createConnection({ host: host, port: port }, () => {
-                // 'connect' listener.
+            if (secure) {
+                this._socket = tls.connect(options, () => {
+                    // 'connect' listener.
 
-            });
+                });
+            } else {
+                this._socket = net.connect(options as net.NetConnectOpts, () => {
+                    // 'connect' listener.
+
+                });
+            }
+
             this._socket.on('data', (data) => { this._onData(data) });
             this._socket.on('end', () => {
                 this._connected = false;

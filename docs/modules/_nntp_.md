@@ -26,6 +26,6 @@
 
 Ƭ **Headers**: *Record‹string, string›*
 
-*Defined in [src/nntp.ts:42](https://github.com/DasKraken/nntp-fast/blob/fe1dce3/src/nntp.ts#L42)*
+*Defined in [src/nntp.ts:43](https://github.com/DasKraken/nntp-fast/blob/08294ae/src/nntp.ts#L43)*
 
 NNTP post headers

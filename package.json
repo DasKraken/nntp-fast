@@ -1,9 +1,16 @@
 {
   "name": "nntp-fast",
-  "version": "0.1.2",
-  "description": "",
+  "version": "0.2.1",
+  "description": "A lightweight nntp client for node made with attention to speed and ease of use. Works with promises and streams. ",
   "main": "lib/nntp.js",
   "types": "lib/nntp.d.ts",
+  "keywords": [
+    "usenet",
+    "nntp",
+    "newsgroups",
+    "typescript",
+    "protocol"
+  ],
   "files": [
     "lib"
   ],

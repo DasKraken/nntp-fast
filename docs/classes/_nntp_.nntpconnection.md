@@ -47,7 +47,7 @@
 
 \+ **new NntpConnection**(`options?`: [NntpConnectionConstructorOptions](../interfaces/_nntp_.nntpconnectionconstructoroptions.md)): *[NntpConnection](_nntp_.nntpconnection.md)*
 
-*Defined in [src/nntp.ts:98](https://github.com/DasKraken/nntp-fast/blob/fe1dce3/src/nntp.ts#L98)*
+*Defined in [src/nntp.ts:99](https://github.com/DasKraken/nntp-fast/blob/08294ae/src/nntp.ts#L99)*
 
 **Parameters:**
 
@@ -63,7 +63,7 @@ Name | Type |
 
 • **end**(): *void*
 
-*Defined in [src/nntp.ts:60](https://github.com/DasKraken/nntp-fast/blob/fe1dce3/src/nntp.ts#L60)*
+*Defined in [src/nntp.ts:61](https://github.com/DasKraken/nntp-fast/blob/08294ae/src/nntp.ts#L61)*
 
 Emitted when socket is closed.
 
@@ -77,7 +77,7 @@ ___
 
 • **error**(`error`: Error): *void*
 
-*Defined in [src/nntp.ts:67](https://github.com/DasKraken/nntp-fast/blob/fe1dce3/src/nntp.ts#L67)*
+*Defined in [src/nntp.ts:68](https://github.com/DasKraken/nntp-fast/blob/08294ae/src/nntp.ts#L68)*
 
 Emitted when an socket or protocoll error occurs.
 
@@ -97,7 +97,7 @@ ___
 
 • **timeout**(): *void*
 
-*Defined in [src/nntp.ts:74](https://github.com/DasKraken/nntp-fast/blob/fe1dce3/src/nntp.ts#L74)*
+*Defined in [src/nntp.ts:75](https://github.com/DasKraken/nntp-fast/blob/08294ae/src/nntp.ts#L75)*
 
 Emitted when socket timeouts.
 
@@ -111,7 +111,7 @@ Emitted when socket timeouts.
 
 ▸ **article**(`messageid?`: string | number): *Promise‹object›*
 
-*Defined in [src/nntp.ts:477](https://github.com/DasKraken/nntp-fast/blob/fe1dce3/src/nntp.ts#L477)*
+*Defined in [src/nntp.ts:512](https://github.com/DasKraken/nntp-fast/blob/08294ae/src/nntp.ts#L512)*
 
 The ARTICLE command selects an article according to the arguments and
 presents the entire article (that is, the headers, and the body) to
@@ -131,7 +131,7 @@ ___
 
 ▸ **body**(`messageid?`: string | number): *Promise‹object›*
 
-*Defined in [src/nntp.ts:521](https://github.com/DasKraken/nntp-fast/blob/fe1dce3/src/nntp.ts#L521)*
+*Defined in [src/nntp.ts:556](https://github.com/DasKraken/nntp-fast/blob/08294ae/src/nntp.ts#L556)*
 
 The BODY command selects an article according to the arguments and
 presents the body to the client.
@@ -150,7 +150,7 @@ ___
 
 ▸ **bodyStream**(`messageid?`: string | number): *[SteamResponse](../interfaces/_nntp_.steamresponse.md)*
 
-*Defined in [src/nntp.ts:540](https://github.com/DasKraken/nntp-fast/blob/fe1dce3/src/nntp.ts#L540)*
+*Defined in [src/nntp.ts:575](https://github.com/DasKraken/nntp-fast/blob/08294ae/src/nntp.ts#L575)*
 
 The BODY command selects an article according to the arguments and
 presents the body to the client. Body is given as stream.
@@ -169,7 +169,7 @@ ___
 
 ▸ **capabilities**(`keyword?`: undefined | string): *Promise‹[DataResponse](../interfaces/_nntp_.dataresponse.md)›*
 
-*Defined in [src/nntp.ts:343](https://github.com/DasKraken/nntp-fast/blob/fe1dce3/src/nntp.ts#L343)*
+*Defined in [src/nntp.ts:378](https://github.com/DasKraken/nntp-fast/blob/08294ae/src/nntp.ts#L378)*
 
 The CAPABILITIES command allows a client to determine the
 capabilities of the server at any given time.
@@ -188,9 +188,24 @@ ___
 
 ###  connect
 
-▸ **connect**(`host`: string, `port`: number): *Promise‹[BasicResponse](../interfaces/_nntp_.basicresponse.md)›*
+▸ **connect**(`options`: ConnectionOptions | net.NetConnectOpts, `secure?`: undefined | false | true): *Promise‹[BasicResponse](../interfaces/_nntp_.basicresponse.md)›*
 
-*Defined in [src/nntp.ts:126](https://github.com/DasKraken/nntp-fast/blob/fe1dce3/src/nntp.ts#L126)*
+*Defined in [src/nntp.ts:129](https://github.com/DasKraken/nntp-fast/blob/08294ae/src/nntp.ts#L129)*
+
+Connect to nntp server
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`options` | ConnectionOptions &#124; net.NetConnectOpts | See [TCP options](https://nodejs.org/api/net.html#net_socket_connect_options_connectlistener) or [TLS options](https://nodejs.org/api/tls.html#tls_tls_connect_options_callback). |
+`secure?` | undefined &#124; false &#124; true | Whether to use a secure connection  |
+
+**Returns:** *Promise‹[BasicResponse](../interfaces/_nntp_.basicresponse.md)›*
+
+▸ **connect**(`host`: string, `port`: number, `secure?`: undefined | false | true): *Promise‹[BasicResponse](../interfaces/_nntp_.basicresponse.md)›*
+
+*Defined in [src/nntp.ts:137](https://github.com/DasKraken/nntp-fast/blob/08294ae/src/nntp.ts#L137)*
 
 Connect to nntp server
 
@@ -199,7 +214,8 @@ Connect to nntp server
 Name | Type | Description |
 ------ | ------ | ------ |
 `host` | string | - |
-`port` | number |   |
+`port` | number | - |
+`secure?` | undefined &#124; false &#124; true | Wheter to use a secure connection  |
 
 **Returns:** *Promise‹[BasicResponse](../interfaces/_nntp_.basicresponse.md)›*
 
@@ -209,7 +225,7 @@ ___
 
 ▸ **date**(): *Promise‹object›*
 
-*Defined in [src/nntp.ts:583](https://github.com/DasKraken/nntp-fast/blob/fe1dce3/src/nntp.ts#L583)*
+*Defined in [src/nntp.ts:618](https://github.com/DasKraken/nntp-fast/blob/08294ae/src/nntp.ts#L618)*
 
 This command exists to help clients find out the current Coordinated
 Universal Time from the server's perspective.
@@ -222,7 +238,7 @@ ___
 
 ▸ **group**(`group`: string): *Promise‹object›*
 
-*Defined in [src/nntp.ts:382](https://github.com/DasKraken/nntp-fast/blob/fe1dce3/src/nntp.ts#L382)*
+*Defined in [src/nntp.ts:417](https://github.com/DasKraken/nntp-fast/blob/08294ae/src/nntp.ts#L417)*
 
 The GROUP command selects a newsgroup as the currently selected
 newsgroup and returns summary information about it.
@@ -241,7 +257,7 @@ ___
 
 ▸ **head**(`messageid?`: string | number): *Promise‹object›*
 
-*Defined in [src/nntp.ts:500](https://github.com/DasKraken/nntp-fast/blob/fe1dce3/src/nntp.ts#L500)*
+*Defined in [src/nntp.ts:535](https://github.com/DasKraken/nntp-fast/blob/08294ae/src/nntp.ts#L535)*
 
 The HEAD command selects an article according to the arguments and
 presents the headers to the client.
@@ -260,7 +276,7 @@ ___
 
 ▸ **help**(): *Promise‹[BasicResponse](../interfaces/_nntp_.basicresponse.md)›*
 
-*Defined in [src/nntp.ts:601](https://github.com/DasKraken/nntp-fast/blob/fe1dce3/src/nntp.ts#L601)*
+*Defined in [src/nntp.ts:636](https://github.com/DasKraken/nntp-fast/blob/08294ae/src/nntp.ts#L636)*
 
 This command provides a short summary of the commands that are
 understood by this implementation of the server.
@@ -273,7 +289,7 @@ ___
 
 ▸ **last**(): *Promise‹[StatResponse](../interfaces/_nntp_.statresponse.md)›*
 
-*Defined in [src/nntp.ts:431](https://github.com/DasKraken/nntp-fast/blob/fe1dce3/src/nntp.ts#L431)*
+*Defined in [src/nntp.ts:466](https://github.com/DasKraken/nntp-fast/blob/08294ae/src/nntp.ts#L466)*
 
 The current article number will be set to the previous article in
 that newsgroup
@@ -286,7 +302,7 @@ ___
 
 ▸ **listgroup**(`group?`: undefined | string, `range?`: undefined | string): *Promise‹object›*
 
-*Defined in [src/nntp.ts:411](https://github.com/DasKraken/nntp-fast/blob/fe1dce3/src/nntp.ts#L411)*
+*Defined in [src/nntp.ts:446](https://github.com/DasKraken/nntp-fast/blob/08294ae/src/nntp.ts#L446)*
 
 The LISTGROUP command selects a newsgroup in the same manner as the
 GROUP command but also provides a list of article
@@ -308,7 +324,7 @@ ___
 
 ▸ **modeReader**(): *Promise‹[BasicResponse](../interfaces/_nntp_.basicresponse.md)›*
 
-*Defined in [src/nntp.ts:356](https://github.com/DasKraken/nntp-fast/blob/fe1dce3/src/nntp.ts#L356)*
+*Defined in [src/nntp.ts:391](https://github.com/DasKraken/nntp-fast/blob/08294ae/src/nntp.ts#L391)*
 
 The MODE READER command instructs a mode-switching server to switch
 modes, as described in [RFC 3977 Section 3.4.2](https://tools.ietf.org/html/rfc3977#section-3.4.2).
@@ -321,7 +337,7 @@ ___
 
 ▸ **newsgroups**(`date`: Date): *Promise‹[DataResponse](../interfaces/_nntp_.dataresponse.md)›*
 
-*Defined in [src/nntp.ts:616](https://github.com/DasKraken/nntp-fast/blob/fe1dce3/src/nntp.ts#L616)*
+*Defined in [src/nntp.ts:651](https://github.com/DasKraken/nntp-fast/blob/08294ae/src/nntp.ts#L651)*
 
 This command returns a list of newsgroups created on the server since
 the specified date and time.
@@ -336,7 +352,7 @@ Name | Type | Description |
 
 ▸ **newsgroups**(`date`: string, `time`: string, `gmt?`: undefined | false | true): *Promise‹[DataResponse](../interfaces/_nntp_.dataresponse.md)›*
 
-*Defined in [src/nntp.ts:617](https://github.com/DasKraken/nntp-fast/blob/fe1dce3/src/nntp.ts#L617)*
+*Defined in [src/nntp.ts:652](https://github.com/DasKraken/nntp-fast/blob/08294ae/src/nntp.ts#L652)*
 
 **Parameters:**
 
@@ -354,7 +370,7 @@ ___
 
 ▸ **next**(): *Promise‹[StatResponse](../interfaces/_nntp_.statresponse.md)›*
 
-*Defined in [src/nntp.ts:453](https://github.com/DasKraken/nntp-fast/blob/fe1dce3/src/nntp.ts#L453)*
+*Defined in [src/nntp.ts:488](https://github.com/DasKraken/nntp-fast/blob/08294ae/src/nntp.ts#L488)*
 
 The current article number will be set to the next article in
 that newsgroup
@@ -367,7 +383,7 @@ ___
 
 ▸ **quit**(): *Promise‹[BasicResponse](../interfaces/_nntp_.basicresponse.md)›*
 
-*Defined in [src/nntp.ts:368](https://github.com/DasKraken/nntp-fast/blob/fe1dce3/src/nntp.ts#L368)*
+*Defined in [src/nntp.ts:403](https://github.com/DasKraken/nntp-fast/blob/08294ae/src/nntp.ts#L403)*
 
 The client uses the QUIT command to terminate the session.
 
@@ -379,7 +395,7 @@ ___
 
 ▸ **runCommand**(`command`: string, `decideMldb?`: undefined | function): *Promise‹[DataResponse](../interfaces/_nntp_.dataresponse.md)›*
 
-*Defined in [src/nntp.ts:300](https://github.com/DasKraken/nntp-fast/blob/fe1dce3/src/nntp.ts#L300)*
+*Defined in [src/nntp.ts:335](https://github.com/DasKraken/nntp-fast/blob/08294ae/src/nntp.ts#L335)*
 
 Sends command to server.
 
@@ -398,7 +414,7 @@ ___
 
 ▸ **runCommandStream**(`command`: string, `decideMldb?`: undefined | function): *[SteamResponse](../interfaces/_nntp_.steamresponse.md)*
 
-*Defined in [src/nntp.ts:319](https://github.com/DasKraken/nntp-fast/blob/fe1dce3/src/nntp.ts#L319)*
+*Defined in [src/nntp.ts:354](https://github.com/DasKraken/nntp-fast/blob/08294ae/src/nntp.ts#L354)*
 
 Sends command to server. Creates a stream for the multi line data block.
 
@@ -417,7 +433,7 @@ ___
 
 ▸ **stat**(`messageid?`: string | number): *Promise‹[StatResponse](../interfaces/_nntp_.statresponse.md)›*
 
-*Defined in [src/nntp.ts:553](https://github.com/DasKraken/nntp-fast/blob/fe1dce3/src/nntp.ts#L553)*
+*Defined in [src/nntp.ts:588](https://github.com/DasKraken/nntp-fast/blob/08294ae/src/nntp.ts#L588)*
 
 The STAT command selects an article according to the arguments.
 This command allows the client to determine whether an article exists

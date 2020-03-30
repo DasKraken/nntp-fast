@@ -88,7 +88,7 @@ Transform stream that performs dot-unstuffing
 
 *Overrides void*
 
-*Defined in [src/DotUnstuffingStream.ts:10](https://github.com/DasKraken/nntp-fast/blob/fe1dce3/src/DotUnstuffingStream.ts#L10)*
+*Defined in [src/DotUnstuffingStream.ts:10](https://github.com/DasKraken/nntp-fast/blob/08294ae/src/DotUnstuffingStream.ts#L10)*
 
 **Returns:** *[DotUnstuffingStream](_dotunstuffingstream_.dotunstuffingstream.md)*
 
@@ -98,7 +98,7 @@ Transform stream that performs dot-unstuffing
 
 • **_streamsearch**: *StreamSearch*
 
-*Defined in [src/DotUnstuffingStream.ts:10](https://github.com/DasKraken/nntp-fast/blob/fe1dce3/src/DotUnstuffingStream.ts#L10)*
+*Defined in [src/DotUnstuffingStream.ts:10](https://github.com/DasKraken/nntp-fast/blob/08294ae/src/DotUnstuffingStream.ts#L10)*
 
 ___
 

@@ -19,7 +19,7 @@
 
 • **response**: *Promise‹[BasicResponse](_nntp_.basicresponse.md)›*
 
-*Defined in [src/nntp.ts:50](https://github.com/DasKraken/nntp-fast/blob/fe1dce3/src/nntp.ts#L50)*
+*Defined in [src/nntp.ts:51](https://github.com/DasKraken/nntp-fast/blob/08294ae/src/nntp.ts#L51)*
 
 ___
 
@@ -27,4 +27,4 @@ ___
 
 • **stream**: *Readable*
 
-*Defined in [src/nntp.ts:51](https://github.com/DasKraken/nntp-fast/blob/fe1dce3/src/nntp.ts#L51)*
+*Defined in [src/nntp.ts:52](https://github.com/DasKraken/nntp-fast/blob/08294ae/src/nntp.ts#L52)*

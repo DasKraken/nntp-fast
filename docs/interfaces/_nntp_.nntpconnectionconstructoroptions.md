@@ -18,6 +18,6 @@
 
 • **dotUnstuffing**? : *undefined | false | true*
 
-*Defined in [src/nntp.ts:46](https://github.com/DasKraken/nntp-fast/blob/fe1dce3/src/nntp.ts#L46)*
+*Defined in [src/nntp.ts:47](https://github.com/DasKraken/nntp-fast/blob/08294ae/src/nntp.ts#L47)*
 
 Whether dot unstuffing should be performed. (Default: true)

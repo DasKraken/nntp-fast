@@ -20,7 +20,7 @@
 
 • **articleId**: *string*
 
-*Defined in [src/nntp.ts:38](https://github.com/DasKraken/nntp-fast/blob/fe1dce3/src/nntp.ts#L38)*
+*Defined in [src/nntp.ts:39](https://github.com/DasKraken/nntp-fast/blob/08294ae/src/nntp.ts#L39)*
 
 Message id of selected article.
 
@@ -30,7 +30,7 @@ ___
 
 • **articleNumber**: *number*
 
-*Defined in [src/nntp.ts:36](https://github.com/DasKraken/nntp-fast/blob/fe1dce3/src/nntp.ts#L36)*
+*Defined in [src/nntp.ts:37](https://github.com/DasKraken/nntp-fast/blob/08294ae/src/nntp.ts#L37)*
 
 Number of selected article.
 
@@ -40,6 +40,6 @@ ___
 
 • **code**: *number*
 
-*Defined in [src/nntp.ts:34](https://github.com/DasKraken/nntp-fast/blob/fe1dce3/src/nntp.ts#L34)*
+*Defined in [src/nntp.ts:35](https://github.com/DasKraken/nntp-fast/blob/08294ae/src/nntp.ts#L35)*
 
 Response code. See [RFC 3977 section 3.2](https://tools.ietf.org/html/rfc3977#section-3.2).
